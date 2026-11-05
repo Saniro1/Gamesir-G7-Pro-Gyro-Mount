@@ -1,0 +1,40 @@
+GameSir G7 Pro -> Universal Reversible Box 2 Dock | V22
+===================================================
+
+Contents
+--------
+G7_Modular_v22_g7_mount.stl       Controller-specific G7 Pro bracket, V21 hook, curved supports, with female receiver replacing attached Box 2
+G7_Modular_v22_box.stl            Box 2 with original enclosure and lid rails, plus the centered universal MALE dovetail on the back
+G7_Modular_v22_lid.stl            Original separate Box 2 sliding lid
+G7_Modular_v22_lock_key.stl       Removable crossbar safety key; printed separately
+G7_Modular_v22_universal_receiver.stl  STANDARD socket for integration into other controller adapter designs
+G7_Pro_Modular_v22.scad           Editable source containing all docking geometry and part selectors
+G7_Modular_v22_Print_Ready_4_Parts.3mf    Four separated print objects (not a single assembled STL)
+G7_Modular_v22_Assembly_USB_Down.3mf     Installed view with USB down
+G7_Modular_v22_Assembly_USB_Up.3mf       Installed view with USB up, reversed 180 degrees
+
+HOW TO USE
+----------
+1. Slide the V22 G7 mount on the controller using the existing V21 top hook. The hook grip and retaining channel are NOT modified.
+2. With the locking key REMOVED, align the centered dovetail on the *rear* of the gyro box with the open end of the receiver.
+3. Slide the whole Box 2 module along the receiver from the USB-end/controller-bottom side toward the closed stop. The lid opening faces OUT from the controller.
+4. Insert the separate crossbar locking key sideways through the receiver opening, just beyond the trailing end of the dovetail. Its molded grip stays outside the box. Test the snap catch before routine use.
+5. To reverse USB-C, REMOVE the key, slide Box 2 free, rotate the entire Box 2 AND LID 180 degrees around the outward-facing axis, and slide the same dovetail into the SAME receiver; reinstall the key.
+6. Make any other controller adapter carry the exact same female receiver profile. That controller adapter is NOT included unless designed for its specific controller.
+
+Nominal standard / CAD references
+----------------------------------
+Coordinate system: native Box 2 rear surface is Z=-1. Dovetail is on REAR, not the open-lid face. Native axis for reversible 180-deg flip: X=-1.0,Y=-2.8.
+Male dovetail root approx 10.8 mm wide, head approx 14.2 mm wide, nominal height 2.65 mm, length 19.6 mm. Gap allowances mostly 0.2-0.4 mm. Both orientations use the exact same interface geometry.
+Standalone receiver STL coordinates are local, centered at channel center X/Y=0, bottom surface Z=0. This is a geometric receiver reference: it MUST be integrated into another controller-specific mounting structure.
+Safety lock: removable transverse key at the receiver open end; do not use without the key fitted. PLA may crack at thin key features; PETG is preferred.
+
+TEST & SAFETY
+-------------
+Design verified as connected, watertight main meshes. CAD zero-overlap interference tests passed for BOTH orientations of module with G7 mount and key, and mount with lid. The slide/snap fit is not physically tested. 3D printers vary; print a docking sample before relying on it in use. Adjust tolerances in the supplied source for your slicer / filament; do not force a jammed dovetail. Confirm rear-controller buttons and charging/USB cable routes are not obstructed. Do not leave a heavy module hanging without a properly engaged key.
+
+For FDM: PETG, 4-5 perimeters, around 0.2 mm layers, and support as needed depending on slicer-selected orientation. Verify print orientation/overhangs. If the lock pin is too stiff, adjust tolerances rather than forcing it.
+
+OPTIONAL LOW-COST FIT CHECK
+---------------------------
+Before printing the whole accessory, test G7_Modular_v22_male_fit_coupon.stl against G7_Modular_v22_universal_receiver.stl. Use the same printer settings and PETG for the final parts. This tests dovetail mechanical clearance; it does NOT verify actual GameSir controller shape or locking-key strength. Adjust clearance in the OpenSCAD source if it binds.
