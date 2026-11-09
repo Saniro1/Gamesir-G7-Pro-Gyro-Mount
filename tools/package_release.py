@@ -4,7 +4,7 @@ import zipfile
 
 root = Path(__file__).resolve().parents[1]
 paths = [root/'README.md', root/'.gitignore']
-for name in ('cad', 'printable', 'assemblies', 'docs', 'tools', 'originals'):
+for name in ('cad', 'printable', 'assemblies', 'docs', 'tools', 'originals', 'slicer'):
     paths.extend(p for p in (root/name).rglob('*') if p.is_file() and '__pycache__' not in p.parts)
 (root/'releases').mkdir(exist_ok=True)
 out = root/'releases'/'G7_Pro_Modular_Reversible_Box2_V23_Complete.zip'

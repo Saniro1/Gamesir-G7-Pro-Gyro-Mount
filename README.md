@@ -9,6 +9,10 @@ This repository preserves the complete supplied V22 package and adds a self-cont
 
 Download the [complete V23 ZIP](releases/G7_Pro_Modular_Reversible_Box2_V23_Complete.zip) for all corrected files and preserved originals.
 
+## Snapmaker U1 print project
+
+For a U1 with a 0.4 mm nozzle and regular Snapmaker black PLA, use the [configured two-plate Snapmaker Orca 3MF](slicer/Snapmaker_U1_PLA_Black_0.4/G7_Modular_v23_U1_0.4_Snapmaker_PLA_Black.3mf). It contains fit tests and the four production parts with material/process settings, orientations and supports. [Setup details and estimates](slicer/Snapmaker_U1_PLA_Black_0.4/README.md). Open as a project, review the preview and print the fit-test plate first.
+
 ## Start with the fit tests
 
 1. Print `printable/G7_Modular_v23_hook_fit_coupon.stl` first. It preserves the full hook width/contact surfaces but omits the long arms and dock. Fit it gently on the controller; it must seat without forcing, scratching, or contacting buttons. **This coupon is not a load-bearing mount.**
@@ -16,7 +20,7 @@ Download the [complete V23 ZIP](releases/G7_Pro_Modular_Reversible_Box2_V23_Comp
 3. Only after those pass, print the full mount, box and lid and check the complete controller installation path, rear buttons, triggers, cable bends, and your gyro device. The short hook coupon does not test the long arms against the controller body.
 4. Keep the controller supported while checking retention. Test with an empty box before adding the device. Record interference locations and measured gaps before changing controller-facing geometry.
 
-PETG is a reasonable starting material for the flexible key. Suggested starting settings are 0.20 mm layers and 4–5 perimeters; these are not validated process settings. Print the key with its flat bottom on the bed. Its tongue bridges about 13 mm across a 0.40 mm gap; review the bridge in your slicer and avoid trapping support in the gap. If it fuses or cracks, stop and adjust the process/design. The main mount and box may need supports. Review every orientation and overhang in the slicer.
+PETG is a reasonable starting material for the flexible key. Suggested starting settings are 0.20 mm layers and 4–5 perimeters; these are not validated process settings. The configured U1 project turns the key onto its long side with removable supports, keeping the flex gap vertical. Slicing the key flat leaves an unsupported 13 mm tongue; use the supplied orientation and inspect/remove supports carefully. If the gap fuses or the tongue cracks, stop and adjust the process/design. The main mount and box may need supports. Review every orientation and overhang in the slicer.
 
 ## Files
 
