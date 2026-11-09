@@ -1,8 +1,8 @@
 {
   "supported_project": "G7_Modular_v23_U1_0.4_Snapmaker_PLA_Black_Supported.3mf",
-  "supported_sha256": "5454f3b0bba621f8a866e165c1e4318eaed54561f490c247318f55ec24cc959a",
+  "supported_sha256": "39dbb2de02c710aecfbc6f1b9a5eb083c38ed501305bed56e950fbdccdceaf33",
   "project": "G7_Modular_v23_U1_0.4_Snapmaker_PLA_Black.3mf",
-  "sha256": "24338e6556f8ffd59d69ab977f7545948cd762768502894ff35eb4e519ed21ca",
+  "sha256": "ebfaf36ae194d5e1950f347f8313a3b768c85ba834ad891f96f9f25a3425c143",
   "snapmaker_orca_release": "2.4.1",
   "checks": [
     {
@@ -53,6 +53,41 @@
       "name": "Saved support_on_build_plate_only",
       "passed": true,
       "actual": "0"
+    },
+    {
+      "name": "Saved support_type",
+      "passed": true,
+      "actual": "tree(auto)"
+    },
+    {
+      "name": "Saved support_style",
+      "passed": true,
+      "actual": "tree_slim"
+    },
+    {
+      "name": "Saved support_top_z_distance",
+      "passed": true,
+      "actual": "0.32"
+    },
+    {
+      "name": "Saved support_interface_top_layers",
+      "passed": true,
+      "actual": "2"
+    },
+    {
+      "name": "Saved support_interface_spacing",
+      "passed": true,
+      "actual": "0.4"
+    },
+    {
+      "name": "Saved tree_support_branch_diameter",
+      "passed": true,
+      "actual": "2"
+    },
+    {
+      "name": "Saved tree_support_wall_count",
+      "passed": true,
+      "actual": "1"
     },
     {
       "name": "Saved filament_colour",
@@ -347,7 +382,7 @@
         "sliced_plates": [
           {
             "id": 1,
-            "sliced_time": 2,
+            "sliced_time": 3,
             "sliced_time_with_cache": 2,
             "triangle_count": 3056,
             "warning_message": ""
@@ -425,7 +460,7 @@
     {
       "name": "Reopened support_style",
       "passed": true,
-      "actual": "snug"
+      "actual": "tree_slim"
     },
     {
       "name": "plate 1 G-code generated",
@@ -476,17 +511,17 @@
       "passed": true
     }
   ],
-  "check_count": 76,
+  "check_count": 83,
   "plate_estimates": [
     {
       "plate": 1,
-      "filament_g": "7.99",
-      "time": "48m 10s"
+      "filament_g": "7.92",
+      "time": "47m 53s"
     },
     {
       "plate": 2,
-      "filament_g": "23.34",
-      "time": "2h 23m 28s"
+      "filament_g": "21.24",
+      "time": "2h 15m 8s"
     }
   ],
   "physical_print_tested": false,

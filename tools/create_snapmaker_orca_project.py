@@ -38,8 +38,8 @@ process.update(name='G7 V23 - PLA fit and strength - 0.16mm @U1',print_settings_
  outer_wall_speed=['40','40'],inner_wall_speed=['60','60'],sparse_infill_speed=['80','80'],internal_solid_infill_speed=['60','60'],top_surface_speed=['35','35'],gap_infill_speed='35',
  initial_layer_speed=['20','20'],initial_layer_infill_speed=['25','25'],bridge_speed=['20','20'],internal_bridge_speed=['25','25'],
  default_acceleration=['1500','1500'],outer_wall_acceleration=['1000','1000'],inner_wall_acceleration=['1500','1500'],travel_speed=['150','150'],
- enable_prime_tower='0',ooze_prevention='0',enable_support='1',support_type='normal(auto)',support_style='snug',support_threshold_angle='30',
- support_on_build_plate_only='0',support_top_z_distance='0.20',support_bottom_z_distance='0.20',support_interface_top_layers='3',support_object_xy_distance='0.35',
+ enable_prime_tower='0',ooze_prevention='0',enable_support='1',support_type='tree(auto)',support_style='tree_slim',support_threshold_angle='30',
+ support_on_build_plate_only='0',support_top_z_distance='0.32',support_bottom_z_distance='0.32',support_interface_top_layers='2',support_interface_spacing='0.40',support_object_xy_distance='0.45',support_base_pattern_spacing='3.0',tree_support_branch_diameter='2.0',tree_support_wall_count='1',tree_support_with_infill='0',
  support_speed=['50','50'],support_interface_speed=['30','30'],brim_type='outer_only',brim_width='5',brim_object_gap='0.15',
  curr_bed_type='Textured PEI Plate',print_sequence='by layer',elefant_foot_compensation='0.15',xy_hole_compensation='0',xy_contour_compensation='0')
 filament['filament_max_volumetric_speed']=['8']
@@ -73,7 +73,7 @@ for name,parts in [('01 - Fit tests first',['hook_fit_coupon','universal_receive
   if part in ['lid','universal_receiver']:
    params['enable_support']='0'
    params['brim_type']='no_brim'
-  if part=='lock_key':params.update(sparse_infill_density='100%',outer_wall_speed='25,25',inner_wall_speed='30,30')
+  if part=='lock_key':params.update(sparse_infill_density='100%',outer_wall_speed='25,25',inner_wall_speed='30,30',support_type='normal(auto)',support_style='snug',support_interface_top_layers='1',support_interface_spacing='0.40',support_base_pattern_spacing='3.0',support_top_z_distance='0.20')
   objs.append(dict(path=str(path),count=1,filaments=[1],pos_x=[45+50*len(objs)],pos_y=[100],pos_z=[0],print_params=params))
  plates.append(dict(plate_name=name,need_arrange=False,objects=objs))
 (w/'assemble.json').write_text(json.dumps(dict(plates=plates),indent=2)+'\n')

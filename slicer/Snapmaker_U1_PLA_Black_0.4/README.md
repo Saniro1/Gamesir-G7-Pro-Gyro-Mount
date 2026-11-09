@@ -10,8 +10,8 @@ This uses the official **Snapmaker PLA Basic @U1** preset for regular PLA, with 
 
 | Plate | Parts | Orca estimate |
 | --- | --- | --- |
-| 01 – Fit tests first | Short controller hook, standalone receiver, male dovetail coupon, locking key | 48m 10s; 7.99 g |
-| 02 – Complete mount | Full mount, box, lid, locking key | 2h 23m 28s; 23.34 g |
+| 01 – Fit tests first | Short controller hook, standalone receiver, male dovetail coupon, locking key | 47m 53s; 7.92 g |
+| 02 – Complete mount | Full mount, box, lid, locking key | 2h 15m 8s; 21.24 g |
 
 Print plate 1 first. Check the actual hook on your controller, the dovetail fit and the key's release action before printing plate 2. These estimates include the slicer's modeled support/brim use; actual printer time/material can differ. The design has not been physically printed or fitted to a controller.
 
@@ -30,8 +30,10 @@ Print plate 1 first. Check the actual hook on your controller, the dovetail fit 
 | Infill | 25% gyroid; key 100% |
 | Outer / inner wall speeds | 40 / 60 mm/s; key 25 / 30 |
 | Infill / top surface speed | 80 / 35 mm/s |
-| Support | Normal auto, snug, supports allowed on part surfaces too |
-| Support contact gap | 0.20 mm Z, 0.35 mm XY |
+| Support | Slim tree auto, single-wall branches; supports may start on part surfaces |
+| Support contact gap | 0.32 mm Z, 0.45 mm XY; key uses 0.20 mm top Z |
+| Tree branch diameter / walls | 2.0 mm initial diameter / 1 wall, no infill |
+| Support interface | 2 layers, 0.40 mm spacing; key uses 1 layer |
 | Brim | 5 mm outer brim, 0.15 mm gap; disabled on lid and standalone receiver |
 | Scale / XY size correction | 100% / zero; elephant foot compensation 0.15 mm |
 | Sequence / prime tower | By layer / disabled (single material) |
@@ -42,7 +44,9 @@ Supports may start on part surfaces, not only the build plate. This supports the
 
 These choices follow an **18-candidate orientation comparison** of mount, box and short hook. [orientation_study.json](orientation_study.json) records the measurements; its initial comparison used build-plate-only supports, while the final project allows support on surfaces as well. No Vader 5 Pro reference project was available in this chat/workspace, so this is an independently checked removable-support setup rather than a claim to reproduce that file exactly.
 
-**The locking key is on its long side with removable supports.** This places its flex gap vertically and avoids a 13 mm unsupported cantilever in the original flat orientation. Remove its support and brim carefully and inspect that the gap and tongue are free. The model itself is unchanged. PLA is more brittle than the PETG originally suggested for this flexure, so test insertion/release gently and inspect for cracking. This setup is not a strength or fatigue certification.
+**Easy-removal supports:** the mount, hook coupon and box use slim, hollow tree branches instead of dense normal support walls. The 0.32 mm top gap equals two 0.16 mm layers, and the interface has wider spacing. These choices reduce contact and should make supports easier to detach; undersides may be rougher, and removal force has not been physically tested.
+
+**The locking key is on its long side with sparse normal/snug support pads.** Its tiny base is better served by short pads than tall tree branches. These use one interface layer and 0.40 mm interface spacing, retaining a 0.20 mm top gap so the thin key is not left with a large unsupported separation. This places its flex gap vertically and avoids a 13 mm unsupported cantilever in the original flat orientation. Remove its support and brim carefully and inspect that the gap and tongue are free. The model itself is unchanged. PLA is more brittle than the PETG originally suggested for this flexure, so test insertion/release gently and inspect for cracking. This setup is not a strength or fatigue certification.
 
 Check that the actual bed is textured PEI, the loaded tool is mapped correctly and supports release cleanly from contact surfaces. Keep the model scale at 100%; whole-part scaling changes the controller hook and box cavity as well as the dovetail. Physical controller/device fit remains unverified.
 
@@ -53,7 +57,7 @@ Created and reopened with the official Snapmaker Orca **2.4.1** Linux release fr
 - https://github.com/Snapmaker/OrcaSlicer/releases/tag/v2.4.1
 - Printer/material base settings: that release's bundled `resources/profiles/Snapmaker`.
 
-Both plates were sliced from the saved project with return code 0, no plate-level slicing warnings, and nonempty G-code. `validation.json` records both project SHA-256 hashes, 76 checks, saved/reloaded settings, geometry preservation and plate membership/clearance. No physical print or graphical UI inspection was performed. The Supported 3MF embeds both validated plate G-code files, including their actual support toolpaths. The companion unsliced 3MF excludes G-code. The support preview is rendered from those generated toolpaths and oriented meshes; it is not a screenshot of the slicer UI.
+Both plates were sliced from the saved project with return code 0, no plate-level slicing warnings, and nonempty G-code. `validation.json` records both project SHA-256 hashes, 83 checks, saved/reloaded settings, geometry preservation and plate membership/clearance. No physical print or graphical UI inspection was performed. The Supported 3MF embeds both validated plate G-code files, including their actual support toolpaths. The companion unsliced 3MF excludes G-code. The support preview is rendered from those generated toolpaths and oriented meshes; it is not a screenshot of the slicer UI.
 
 The CLI in 2.4.1 has inherited Bambu baseline/version handling: reopening its own project requires `--allow-newer-file`, and it reports missing optional BBL baseline paths and an empty bed-exclusion polygon. Validation confirms the full saved U1 configuration is retained and both plates slice successfully. The generator omits a redundant partial process-preset `wipe_tower_filament=0` field to avoid another 2.4.1 CLI null-pointer bug; prime tower stays disabled and the merged project retains the default. These are CLI workarounds, not printer G-code modifications. Manufacturer start/end/tool-change routines remain unchanged.
 

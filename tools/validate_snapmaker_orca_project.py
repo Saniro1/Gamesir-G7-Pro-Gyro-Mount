@@ -20,7 +20,7 @@ with zipfile.ZipFile(path) as z:
  check('ZIP integrity',z.testzip() is None)
  config=json.loads(z.read('Metadata/project_settings.config'))
  for key,value in dict(printer_model='Snapmaker U1',printer_settings_id='Snapmaker U1 (0.4 nozzle)',curr_bed_type='Textured PEI Plate',
-                       layer_height='0.16',wall_loops='4',sparse_infill_density='25%',sparse_infill_pattern='gyroid',enable_prime_tower='0',support_on_build_plate_only='0',
+                       layer_height='0.16',wall_loops='4',sparse_infill_density='25%',sparse_infill_pattern='gyroid',enable_prime_tower='0',support_on_build_plate_only='0',support_type='tree(auto)',support_style='tree_slim',support_top_z_distance='0.32',support_interface_top_layers='2',support_interface_spacing='0.4',tree_support_branch_diameter='2',tree_support_wall_count='1',
                        filament_colour=['#000000'],filament_type=['PLA'],nozzle_temperature=['220'],nozzle_temperature_initial_layer=['220'],
                        textured_plate_temp=['65'],textured_plate_temp_initial_layer=['65'],filament_max_volumetric_speed=['8']).items():
   check('Saved '+key,config.get(key)==value,actual=config.get(key))

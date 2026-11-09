@@ -2,7 +2,7 @@
   "slicer": "Snapmaker Orca 2.4.1",
   "candidate_count": 18,
   "benchmark_supports": "normal(auto), snug, build plate only",
-  "final_supports": "normal(auto), snug, everywhere; disabled on lid/receiver",
+  "final_supports": "tree(auto), tree_slim, single wall, 2.0 mm branches, 0.32 mm Z gap, 0.40 mm interface spacing; key uses sparse normal/snug pads; lid/receiver support-free",
   "selected_rotation": "90 degrees about native X for mount, hook, box and male coupon",
   "selection_reason": "Broad flat bed contact for bracket/box, matching coupon layer direction, less support and lower estimated time than prior upright orientation.",
   "vader_reference_available": false,

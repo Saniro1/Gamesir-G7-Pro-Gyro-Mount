@@ -74,23 +74,23 @@
   "support_line_width": "0.42",
   "support_interface_filament": "0",
   "support_on_build_plate_only": "0",
-  "support_top_z_distance": "0.20",
+  "support_top_z_distance": "0.32",
   "support_interface_loop_pattern": "0",
-  "support_interface_top_layers": "3",
-  "support_interface_spacing": "0.5",
+  "support_interface_top_layers": "2",
+  "support_interface_spacing": "0.40",
   "support_interface_speed": [
     "30",
     "30"
   ],
   "support_interface_pattern": "auto",
   "support_base_pattern": "default",
-  "support_base_pattern_spacing": "2.5",
+  "support_base_pattern_spacing": "3.0",
   "support_speed": [
     "50",
     "50"
   ],
   "support_threshold_angle": "30",
-  "support_object_xy_distance": "0.35",
+  "support_object_xy_distance": "0.45",
   "detect_thin_wall": "0",
   "top_surface_line_width": "0.42",
   "top_surface_speed": [
@@ -163,15 +163,15 @@
     "25"
   ],
   "resolution": "0.012",
-  "support_type": "normal(auto)",
-  "support_style": "snug",
-  "support_bottom_z_distance": "0.20",
+  "support_type": "tree(auto)",
+  "support_style": "tree_slim",
+  "support_bottom_z_distance": "0.32",
   "support_interface_bottom_layers": "2",
   "support_expansion": "0",
-  "tree_support_branch_diameter": "2",
+  "tree_support_branch_diameter": "2.0",
   "tree_support_branch_angle": "45",
   "tree_support_branch_angle_organic": "45",
-  "tree_support_wall_count": "0",
+  "tree_support_wall_count": "1",
   "top_surface_pattern": "monotonicline",
   "top_surface_acceleration": [
     "2000",
@@ -203,6 +203,7 @@
     "1500",
     "1500"
   ],
+  "tree_support_with_infill": "0",
   "brim_type": "outer_only",
   "curr_bed_type": "Textured PEI Plate"
 }
