@@ -1,70 +1,60 @@
 # GameSir G7 Pro modular reversible gyro mount
 
-**V23 is a CAD-checked prototype. Physical fit on a G7 Pro has not been verified.**
-The owner has not printed the hook; the supplied archive has no measured controller model or dimensions for the device inside Box 2. Controller grip, button/trigger clearance, cable clearance, charging-dock clearance, device fit, and load strength still need testing. Do not treat the filenames or the original instructions as proof of fit.
+**V24 is the current revision:** both top clips are shortened from **10 mm to 9 mm**, their width/thickness stay unchanged, and the Box 2 dock sits **40 mm higher**. The U1 project uses **thin straight supports, with no branches**.
 
-This repository preserves the complete supplied V22 package and adds a self-contained V23 repair. The box can be reversed 180° to point its USB opening up or down. Original controller-contact surfaces, box cavity and sliding lid remain unchanged because there is no dimensional evidence supporting a change to them.
+The owner reported that the previous clips were too long and tight, and the previous dock sat too low. V24 incorporates that feedback. The revised fit has not yet been physically tested; print the short hook coupon first.
 
-![V23 CAD views](docs/V23_preview.png)
+![V23 and V24 assembly comparison](docs/V24_comparison.png)
 
-Download the [complete V23 ZIP](releases/G7_Pro_Modular_Reversible_Box2_V23_Complete.zip) for all corrected files and preserved originals.
+## Download and print
 
-## Snapmaker U1 print project
+- [Snapmaker U1 0.4 mm / Snapmaker PLA Black — supported V24 3MF](slicer/Snapmaker_U1_PLA_Black_0.4_V24/G7_Modular_v24_U1_0.4_Snapmaker_PLA_Black_Supported.3mf)
+- [Editable, unsliced V24 project](slicer/Snapmaker_U1_PLA_Black_0.4_V24/G7_Modular_v24_U1_0.4_Snapmaker_PLA_Black.3mf)
+- [Complete V24 ZIP](releases/G7_Pro_Modular_Reversible_Box2_V24_Complete.zip)
+- [Revised attachment STL](printable/G7_Modular_v24_g7_mount.stl) and [9 mm hook test STL](printable/G7_Modular_v24_hook_fit_coupon.stl)
 
-For a U1 with a 0.4 mm nozzle and regular Snapmaker black PLA, use the [configured two-plate Snapmaker Orca 3MF](slicer/Snapmaker_U1_PLA_Black_0.4/G7_Modular_v23_U1_0.4_Snapmaker_PLA_Black_Supported.3mf). It contains fit tests and the four production parts with material/process settings, revised orientations, and actual sliced support toolpaths. An editable unsliced companion is included alongside it. [Setup details and estimates](slicer/Snapmaker_U1_PLA_Black_0.4/README.md). Open as a project, review the preview and print the fit-test plate first.
+Open the 3MF **as a project** in Snapmaker Orca 2.4.1 or newer. The supported file includes cached toolpaths and supports; inspect them in Preview. Re-slice if you change anything.
 
-## Start with the fit tests
+Plate 1 contains the revised hook test, receiver, dovetail coupon and key. Plate 2 contains the complete four-part assembly. **The Box 2 enclosure, lid, key and dovetail profile are unchanged from V23**; reuse those prints if you already have them. To print only the revised attachment, select that object and re-slice rather than sending the cached full-plate job.
 
-1. Print `printable/G7_Modular_v23_hook_fit_coupon.stl` first. It preserves the full hook width/contact surfaces but omits the long arms and dock. Fit it gently on the controller; it must seat without forcing, scratching, or contacting buttons. **This coupon is not a load-bearing mount.**
-2. Print `G7_Modular_v23_universal_receiver.stl`, `G7_Modular_v23_male_fit_coupon.stl`, and `G7_Modular_v23_lock_key.stl`. Test sliding, end stop, key insertion and release using the same material/settings as the final print. The key has a small flexible tongue; check that the 0.40 mm gap has not fused. Press the exposed tongue toward the solid lower bar to release it, then pull the grip. Never force a stuck latch.
-3. Only after those pass, print the full mount, box and lid and check the complete controller installation path, rear buttons, triggers, cable bends, and your gyro device. The short hook coupon does not test the long arms against the controller body.
-4. Keep the controller supported while checking retention. Test with an empty box before adding the device. Record interference locations and measured gaps before changing controller-facing geometry.
+## Changes in V24
 
-PETG is a reasonable starting material for the flexible key. Suggested starting settings are 0.20 mm layers and 4–5 perimeters; these are not validated process settings. The configured U1 project turns the key onto its long side with removable supports, keeping the flex gap vertical. Slicing the key flat leaves an unsupported 13 mm tongue; use the supplied orientation and inspect/remove supports carefully. If the gap fuses or the tongue cracks, stop and adjust the process/design. The main mount and box may need supports. Review every orientation and overhang in the slicer.
+- Trimmed 1 mm from the free ends of both top clips: 10 mm becomes 9 mm. No global scaling or thinning of their sides.
+- Moved the complete dock/box/key installation 40 mm toward the controller top.
+- Added 8 mm outward stand-off at the new dock position so the existing upper bend does not obstruct the box or female channel. This is an additional offset, not a change to the requested 40 mm height adjustment.
+- Removed the old long arms and lower dock, and joined the raised receiver with short structural arms.
+- Used sparse straight rectilinear print supports (normal/snug, 3 mm line spacing), 0.32 mm separation and a sparse interface. No tree supports.
 
-## Files
+The structural arms are permanent parts of the attachment. The thin print supports shown in the slicer preview are removable. See [revision measurements and validation](docs/V24_REVISION.md) and [U1 setup details](slicer/Snapmaker_U1_PLA_Black_0.4_V24/README.md).
 
-| Location | Contents |
-| --- | --- |
-| `printable/` | Seven V23 STLs, in millimeters |
-| `assemblies/` | USB-up/down assembly views plus a separated seven-object 3MF |
-| `cad/G7_Pro_Modular_v23.scad` | Self-contained V23 source, with local reference meshes |
-| `cad/reference/` | Exact supplied V22 mount, box and lid used as mesh-backed geometry |
-| `originals/` | Untouched original ZIP and all 13 extracted V22 files, including preview, GLB and 3MFs |
-| `docs/` | Changes, test results, and physical fit checklist |
-| `tools/` | Rebuild, mesh checks and 3MF packaging |
+The controller shell, rear buttons, triggers and cable routes still need a physical check at this new position. Check the short hook first and then the complete mount without loading the device. PLA flexure durability and the strength of the bracket/key have not been physically verified.
 
-The assembly 3MFs are **viewing references, not files to slice assembled**. The separated 3MF puts each object on Z=0 with a 12 mm gap; it does not include printer profiles, support settings or a guarantee that the layout fits your printer. Import/rearrange individual objects as needed.
+## Files and history
 
-## What changed in V23
+V24 CAD is in [cad/G7_Pro_Modular_v24.scad](cad/G7_Pro_Modular_v24.scad); its seven STLs are in `printable/`, and both assembly views are in `assemblies/`. The V24 CAD uses the included, frozen V23 meshes as its baseline, keeping the controller clip surfaces above the end trim and the existing interface geometry intact.
 
-- Added a positive stop at installed Y=51.4 mm. V22 let the enclosure reach a support arm before the dovetail reached its intended stop. V23 limits inward travel to 0.2 mm from the reference assembled pose.
-- Lowered the transverse key slot and key by 0.4 mm, increasing the receiver roof from 0.17 to 0.57 mm.
-- Replaced the key's solid snap bump with a dedicated cantilever tongue and release gap. It is still an untested printed flexure; CAD checks do not establish fatigue life or holding force.
-- Made the source rebuildable using included meshes. V22 referenced `gamesir-dongle-holder.stl` and `Box 2(1).stl`, neither of which was supplied. V23 preserves those already-exported shapes instead of guessing their missing originals. The hook and cavity are mesh-backed, not reconstructed parametric surfaces.
-- Added a short hook-fit coupon, regenerated matching assemblies, and added reproducible geometric checks.
+The complete original V22 ZIP and all 13 extracted files remain unchanged under `originals/`. V23 source, prints and projects are retained for history, including the [V23 instructions](docs/V23_README.md). **Use V24 filenames for this revision.** No license was supplied with the original files; this import does not assert ownership or grant a new license.
 
-See [engineering review](docs/ENGINEERING_REVIEW.md) and [machine-readable results](docs/validation.json). V22 and V23 use the same dovetail profile and box; use the V23 receiver and V23 key together. Do not assume the revised key is validated in a V22 receiver.
+## Rebuild
 
-## Assembly
-
-With the key removed, slide the box dovetail into the open receiver end (installed +Y, controller-bottom side) toward the closed stop. The lid faces outward. Insert the key from the grip side, checking that the tongue returns and the key blocks withdrawal. To reverse USB orientation, remove the key, slide the entire box and lid free, rotate both together by 180° about the outward-facing axis and reinstall. Open the lid by sliding toward negative **local** box Y; this direction rotates with the box. The existing lid has snap detents that require a physical fit test.
-
-The standalone receiver is an interface component for future adapters; it is not itself a mount for another controller.
-
-## Rebuild and validate
-
-Use the existing checkout; no Git worktree is needed. Tested with OpenSCAD 2021.01 and Python 3.12 on Linux:
+Use the existing checkout; no Git worktree is needed. Requires OpenSCAD 2021.01 and Python 3.12:
 
 ```bash
 python -m venv .venv
 .venv/bin/python -m pip install -r tools/requirements.txt
 source .venv/bin/activate
-./tools/build.sh
+./tools/build.sh 24
 ```
 
-The build exports all seven STLs with OpenSCAD warnings treated as errors, checks solids and both assembly orientations, samples insertion paths every 0.25 mm, checks stop/key retention geometry, distinguishes intentional snap interference, checks preservation of supplied surfaces, and writes matching 3MFs and `docs/validation.json`. It fails on unexpected interference or invalid meshes. These are CAD tests, not a controller fit test or a strength simulation.
+The build exports all seven V24 meshes and runs the geometry/assembly checks, writing `docs/validation_v24.json`. Explicitly use `./tools/build.sh 23` to reproduce the old version.
 
-`dock_extra_x` (0–0.5 mm per side) in the SCAD source can widen the female dock for a tight print. Default is zero. Rebuild the receiver/mount and repeat the fit tests after changing it. Do not scale the whole model to adjust the dovetail: that also changes the controller hook and device cavity.
+To regenerate the U1 projects and validate the saved file in the actual slicer:
 
-No license was supplied with the original archive; this import does not assert ownership or grant a new license.
+```bash
+.venv/bin/python tools/create_snapmaker_orca_project.py --design-version 24 \
+  --resources /path/to/SnapmakerOrca/resources \
+  --orca /path/to/snapmaker-orca --workdir /tmp/g7-u1-v24 --validate
+python tools/package_release.py --design-version 24
+```
+
+The saved V24 project passed 84 project/slicing checks, and the V24 geometry passed 92 CAD checks. These establish model and slicer consistency, not physical fit or a load rating.

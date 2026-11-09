@@ -1,9 +1,10 @@
-"""Build portable multi-object 3MFs and check actual exported V23 meshes.
+"""Build portable multi-object 3MFs and check actual exported V23/V24 meshes.
 
 Run after tools/build.sh's OpenSCAD exports. No controller/device model exists;
 these tests assess printed-part geometry only, not hardware fit or strength.
 """
 from pathlib import Path
+import argparse
 import hashlib
 import itertools
 import json
@@ -12,11 +13,17 @@ import xml.etree.ElementTree as ET
 import numpy as np
 import trimesh
 
+parser=argparse.ArgumentParser()
+parser.add_argument('--design-version',type=int,choices=[23,24],default=24)
+args=parser.parse_args()
+VERSION=args.design_version
+SHIFT=np.array([0.,-40.,8.]) if VERSION==24 else np.zeros(3)
 ROOT = Path(__file__).resolve().parents[1]
-(ROOT / 'docs' / 'validation.json').unlink(missing_ok=True)
+REPORT=ROOT/'docs'/('validation_v24.json' if VERSION==24 else 'validation.json')
+REPORT.unlink(missing_ok=True)
 PARTS = ('g7_mount', 'box', 'lid', 'lock_key', 'universal_receiver',
          'male_fit_coupon', 'hook_fit_coupon')
-M = {p: trimesh.load_mesh(ROOT / 'printable' / f'G7_Modular_v23_{p}.stl') for p in PARTS}
+M = {p: trimesh.load_mesh(ROOT / 'printable' / f'G7_Modular_v{VERSION}_{p}.stl') for p in PARTS}
 TOL = 1e-4  # mm^3; manifold float32 intersection noise
 checks = []
 
@@ -45,10 +52,10 @@ def overlap(a, b):
 def assembly(up=False):
     result = {p: M[p].copy() for p in PARTS[:4]}
     for p in ('box', 'lid'):
-        result[p].apply_translation([12.5, 64.2, 29.8])
+        result[p].apply_translation(np.array([12.5, 64.2, 29.8])+SHIFT)
         if up:
-            result[p].vertices[:, :2] = 2 * np.array([11.5, 61.4]) - result[p].vertices[:, :2]
-    result['lock_key'].apply_translation([11.5, 61.4, 23.7])
+            result[p].vertices[:, :2] = 2 * (np.array([11.5, 61.4])+SHIFT[:2]) - result[p].vertices[:, :2]
+    result['lock_key'].apply_translation(np.array([11.5, 61.4, 23.7])+SHIFT)
     return result
 
 
@@ -78,27 +85,27 @@ for up in (False, True):
     check(f'{orientation}: approach to closed stop', v < TOL, overlap_mm3=v)
     hit = common(pose['g7_mount'], translated(pose['box'], [0, -.3, 0]))
     check(f'{orientation}: stop takes contact', len(hit.faces) > 0 and hit.volume > 1
-          and hit.bounds[0, 1] >= 51.29 and hit.bounds[1, 2] <= 28.56,
+          and hit.bounds[0, 1] >= 51.29+SHIFT[1] and hit.bounds[1, 2] <= 28.56+SHIFT[2],
           overlap_mm3=float(hit.volume), bounds_mm=hit.bounds.tolist())
 
 # Verify the exported portable receiver and mount have the same channel/stop.
-receiver = translated(M['universal_receiver'], [11.5, 61.4, 23.7])
+receiver = translated(M['universal_receiver'], np.array([11.5, 61.4, 23.7])+SHIFT)
 region = trimesh.creation.box(extents=[20.5, 25.8, 4.85])
-region.apply_translation([11.5, 61.7, 26.125])
+region.apply_translation(np.array([11.5, 61.7, 26.125])+SHIFT)
 cut = common(M['g7_mount'], region)
-delta = abs(cut.volume + receiver.volume - 2 * common(cut, receiver).volume)
+delta = float(trimesh.boolean.difference([cut,receiver],engine='manifold').volume + trimesh.boolean.difference([receiver,cut],engine='manifold').volume)
 check('portable receiver matches integrated receiver', delta < .002, symmetric_difference_mm3=float(delta))
 
 
 # Inspect material over/under the revised slot in a side wall, outside the
 # dovetail channel. This catches a source/export drift back to the thin roof.
 probe = trimesh.creation.box(extents=[1, 1, 1])
-probe.apply_translation([2.5, 73.3, 28.25])
+probe.apply_translation(np.array([2.5, 73.3, 28.25])+SHIFT)
 roof_volume = common(M['g7_mount'], probe).volume
 check('key slot roof is 0.57 mm thick', abs(roof_volume - .57) < 1e-4,
       measured_thickness_mm=float(roof_volume))
-probe = trimesh.creation.box(extents=[1, 1, 3])
-probe.apply_translation([2.5, 73.3, 24.5])
+probe = trimesh.creation.box(extents=[1, 1, 2.4])
+probe.apply_translation(np.array([2.5, 73.3, 24.9])+SHIFT)
 floor_volume = common(M['g7_mount'], probe).volume
 check('key slot retains 2.08 mm floor', abs(floor_volume - 2.08) < 1e-4,
       measured_thickness_mm=float(floor_volume))
@@ -113,7 +120,7 @@ for d in np.arange(0, 28.01, .25):
         volumes.append(float(hit.volume))
         hit_bounds.append(hit.bounds.tolist())
 check('key insertion interference confined to flex bump', bool(volumes)
-      and all(b[0][2] >= 27.979 and b[1][2] <= 28.251 for b in hit_bounds),
+      and all(b[0][2] >= 27.979+SHIFT[2] and b[1][2] <= 28.251+SHIFT[2] for b in hit_bounds),
       max_overlap_mm3=max(volumes, default=0),
       required_tip_deflection_mm=.27, designed_under_tongue_gap_mm=.40)
 
@@ -130,13 +137,36 @@ for p in ('box', 'lid'):
     old = trimesh.load_mesh(ROOT / 'cad' / 'reference' / f'{p}_v22.stl')
     delta = abs(old.volume + M[p].volume - 2 * common(old, M[p]).volume)
     check(f'{p}: supplied geometry preserved', delta < .01, symmetric_difference_mm3=float(delta))
-old = trimesh.load_mesh(ROOT / 'cad' / 'reference' / 'mount_v22.stl')
-hook_region = trimesh.creation.box(extents=[35, 22, 45])
-hook_region.apply_translation([12.5, 1, 12.5])
-old_hook = common(old, hook_region)
-new_hook = common(M['g7_mount'], hook_region)
-delta = abs(old_hook.volume + new_hook.volume - 2 * common(old_hook, new_hook).volume)
-check('controller hook geometry preserved', delta < .01, symmetric_difference_mm3=float(delta))
+if VERSION==23:
+    old = trimesh.load_mesh(ROOT / 'cad' / 'reference' / 'mount_v22.stl')
+    hook_region = trimesh.creation.box(extents=[35, 22, 45])
+    hook_region.apply_translation([12.5, 1, 12.5])
+    old_hook = common(old, hook_region)
+    new_hook = common(M['g7_mount'], hook_region)
+    delta = abs(old_hook.volume + new_hook.volume - 2 * common(old_hook, new_hook).volume)
+    check('controller hook geometry preserved', delta < .01, symmetric_difference_mm3=float(delta))
+else:
+    old = trimesh.load_mesh(ROOT/'printable'/'G7_Modular_v23_g7_mount.stl')
+    # Above the free-end cut, the actual controller clip region is unchanged.
+    region=trimesh.creation.box(extents=[30,14,16.9])
+    region.apply_translation([11.5,-3.,1.55]) # Z=-6.9..10, Y=-10..4
+    old_hook=common(old,region);new_hook=common(M['g7_mount'],region)
+    delta=abs(old_hook.volume+new_hook.volume-2*common(old_hook,new_hook).volume)
+    check('clip sides and thickness preserved above shortened tips',delta<.01,symmetric_difference_mm3=float(delta))
+    for x in [2.5,20.5]:
+        probe=trimesh.creation.box(extents=[.1,6,11.1])
+        probe.apply_translation([x,-1.8,-3.45]) # Z=-9..2.1, includes the clip only
+        before=common(old,probe);after=common(M['g7_mount'],probe)
+        check(f'clip at X={x}: 10 mm to 9 mm',abs(before.extents[2]-10)<.001 and abs(after.extents[2]-9)<.001,
+              old_length_mm=float(before.extents[2]),new_length_mm=float(after.extents[2]))
+    check('receiver exactly 40 mm higher',abs(M['g7_mount'].bounds[1,1]-(old.bounds[1,1]-40))<1e-4,
+          previous_open_end_y_mm=float(old.bounds[1,1]),new_open_end_y_mm=float(M['g7_mount'].bounds[1,1]))
+    check('raised module male head clears retained upper bend',assembly()['box'].bounds[0,2]-M['hook_fit_coupon'].bounds[1,2]>2,
+          clearance_mm=float(assembly()['box'].bounds[0,2]-M['hook_fit_coupon'].bounds[1,2]))
+    for name in ['box','lid','lock_key','male_fit_coupon','universal_receiver']:
+        old_part=trimesh.load_mesh(ROOT/'printable'/f'G7_Modular_v23_{name}.stl')
+        delta=abs(old_part.volume+M[name].volume-2*common(old_part,M[name]).volume)
+        check(f'{name}: V23 interface geometry retained',delta<.01,symmetric_difference_mm3=float(delta))
 
 NS = 'http://schemas.microsoft.com/3dmanufacturing/core/2015/02'
 ET.register_namespace('', NS)
@@ -145,7 +175,7 @@ ET.register_namespace('', NS)
 def save_3mf(path, meshes, label):
     root = ET.Element(f'{{{NS}}}model', unit='millimeter', attrib={'{http://www.w3.org/XML/1998/namespace}lang': 'en-US'})
     ET.SubElement(root, f'{{{NS}}}metadata', name='Title').text = label
-    ET.SubElement(root, f'{{{NS}}}metadata', name='Description').text = 'V23 prototype; controller physical fit unverified. No slicer process settings.'
+    ET.SubElement(root, f'{{{NS}}}metadata', name='Description').text = f'V{VERSION} prototype; controller physical fit unverified. No slicer process settings.'
     resources = ET.SubElement(root, f'{{{NS}}}resources')
     build = ET.SubElement(root, f'{{{NS}}}build')
     for i, (name, mesh) in enumerate(meshes.items(), 1):
@@ -178,7 +208,7 @@ def save_3mf(path, meshes, label):
 out = ROOT / 'assemblies'
 out.mkdir(exist_ok=True)
 for up in (False, True):
-    save_3mf(out / f'G7_Modular_v23_Assembly_USB_{"Up" if up else "Down"}.3mf', assembly(up), 'V23 assembly view only; do not slice assembled')
+    save_3mf(out / f'G7_Modular_v{VERSION}_Assembly_USB_{"Up" if up else "Down"}.3mf', assembly(up), f'V{VERSION} assembly view only; do not slice assembled')
 
 # Separate all seven objects with a 12 mm gap and put every object on Z=0.
 # This is a layout, NOT a promise of support-free printing or printer bed fit.
@@ -198,11 +228,11 @@ for a, b in itertools.combinations(layout, 2):
           layout[a].bounds[1, 0] + 11.99 <= layout[b].bounds[0, 0])
 for p, mesh in layout.items():
     check(f'print layout: {p} on bed', abs(mesh.bounds[0, 2]) < 1e-6)
-save_3mf(out / 'G7_Modular_v23_Separated_7_Parts.3mf', layout, 'V23 separated geometry; review orientation and supports in slicer')
+save_3mf(out / f'G7_Modular_v{VERSION}_Separated_7_Parts.3mf', layout, f'V{VERSION} separated geometry; review orientation and supports in slicer')
 
 report = dict(status='CAD checks passed; physical hardware fit unverified',
               software=dict(trimesh=trimesh.__version__, numpy=np.__version__),
-              mesh_sha256={p: hashlib.sha256((ROOT/'printable'/f'G7_Modular_v23_{p}.stl').read_bytes()).hexdigest() for p in PARTS},
+              mesh_sha256={p: hashlib.sha256((ROOT/'printable'/f'G7_Modular_v{VERSION}_{p}.stl').read_bytes()).hexdigest() for p in PARTS},
               check_count=len(checks), checks=checks,
               unverified=['G7 Pro shape and hook grip', 'Controller installation path',
                           'Rear button, trigger, USB and charging dock clearance',
@@ -210,5 +240,5 @@ report = dict(status='CAD checks passed; physical hardware fit unverified',
                           'Printer tolerances, latch flexibility, fatigue and load strength'],
               print_layout_bounds_mm=[np.min([v.bounds[0] for v in layout.values()], axis=0).tolist(),
                                       np.max([v.bounds[1] for v in layout.values()], axis=0).tolist()])
-(ROOT/'docs'/'validation.json').write_text(json.dumps(report, indent=2)+'\n')
+REPORT.write_text(json.dumps(report, indent=2)+'\n')
 print(f'{len(checks)} CAD checks passed. Physical controller/device fit remains UNVERIFIED.')

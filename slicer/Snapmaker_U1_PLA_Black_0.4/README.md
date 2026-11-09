@@ -1,3 +1,5 @@
+> V23 archive: the latest requested design is V24 (9 mm clips, dock raised 40 mm, straight supports). See [V24 print project](../Snapmaker_U1_PLA_Black_0.4_V24/README.md).
+
 # Snapmaker U1 · 0.4 mm · Snapmaker PLA Black
 
 Open **G7_Modular_v23_U1_0.4_Snapmaker_PLA_Black_Supported.3mf** in **Snapmaker Orca 2.4.1 or newer**, choosing **Open as project / Load configuration**. It contains the printer/material/process settings, object orientations, support overrides, and two plates. The Supported file includes the actual sliced support/brim toolpaths for both plates. Open Preview to inspect them before printing. The file without `_Supported` is the editable unsliced companion. If you change anything, slice again before sending it to the printer.
@@ -64,7 +66,7 @@ The CLI in 2.4.1 has inherited Bambu baseline/version handling: reopening its ow
 Using the repository's existing virtual environment and an installed Snapmaker Orca 2.4.1 runtime:
 
 ```bash
-.venv/bin/python tools/create_snapmaker_orca_project.py \
+.venv/bin/python tools/create_snapmaker_orca_project.py --design-version 23 \
   --resources /path/to/SnapmakerOrca/resources \
   --orca /path/to/snapmaker-orca \
   --workdir /tmp/g7-u1-project --validate

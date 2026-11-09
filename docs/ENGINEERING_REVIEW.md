@@ -1,3 +1,5 @@
+> Historical V22/V23 review. The owner later reported that the 10 mm clips were too long and the dock too low. See [V24 revision](V24_REVISION.md) for the correction.
+
 # V22 inspection and V23 corrections
 
 ## Evidence and scope
