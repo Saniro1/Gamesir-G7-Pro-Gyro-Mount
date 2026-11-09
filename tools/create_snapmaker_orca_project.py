@@ -39,7 +39,7 @@ process.update(name='G7 V23 - PLA fit and strength - 0.16mm @U1',print_settings_
  initial_layer_speed=['20','20'],initial_layer_infill_speed=['25','25'],bridge_speed=['20','20'],internal_bridge_speed=['25','25'],
  default_acceleration=['1500','1500'],outer_wall_acceleration=['1000','1000'],inner_wall_acceleration=['1500','1500'],travel_speed=['150','150'],
  enable_prime_tower='0',ooze_prevention='0',enable_support='1',support_type='normal(auto)',support_style='snug',support_threshold_angle='30',
- support_on_build_plate_only='1',support_top_z_distance='0.20',support_bottom_z_distance='0.20',support_interface_top_layers='3',support_object_xy_distance='0.35',
+ support_on_build_plate_only='0',support_top_z_distance='0.20',support_bottom_z_distance='0.20',support_interface_top_layers='3',support_object_xy_distance='0.35',
  support_speed=['50','50'],support_interface_speed=['30','30'],brim_type='outer_only',brim_width='5',brim_object_gap='0.15',
  curr_bed_type='Textured PEI Plate',print_sequence='by layer',elefant_foot_compensation='0.15',xy_hole_compensation='0',xy_contour_compensation='0')
 filament['filament_max_volumetric_speed']=['8']
@@ -61,6 +61,10 @@ for name,parts in [('01 - Fit tests first',['hook_fit_coupon','universal_receive
  objs=[]
  for part in parts:
   m=trimesh.load_mesh(repo/'printable'/f'G7_Modular_v23_{part}.stl')
+  # Stand the bracket on its broad outer-hook face, not the small hook tip.
+  # Stand Box 2 on its closed end; use the same male-coupon orientation.
+  if part in ['g7_mount','hook_fit_coupon','box','male_fit_coupon']:
+   m.apply_transform(trimesh.transformations.rotation_matrix(np.pi/2,[1,0,0]))
   if part=='lock_key':m.apply_transform(trimesh.transformations.rotation_matrix(np.pi/2,[1,0,0]))
   if part=='lid':m.apply_transform(trimesh.transformations.rotation_matrix(np.pi,[1,0,0]))
   m.apply_translation([-m.bounds[0,0],-m.bounds[0,1],-m.bounds[0,2]])
@@ -84,11 +88,13 @@ with (w/'export.log').open('w') as log:
  subprocess.run(command,env=env,stdout=log,stderr=subprocess.STDOUT,check=True)
 shutil.copy2(w/'export'/project.name,project)
 if args.validate:
+ supported=project.with_name(project.stem+'_Supported.3mf')
  (w/'validation').mkdir(exist_ok=True)
  with (w/'validation.log').open('w') as log:
   subprocess.run([args.orca,'--debug','2','--outputdir',str(w/'validation'),
-                  '--allow-newer-file','--slice','0','--export-settings',str(w/'validation'/'settings.json'),str(project)],
+                  '--allow-newer-file','--slice','0','--export-3mf',supported.name,'--export-settings',str(w/'validation'/'settings.json'),str(project)],
                  env=env,stdout=log,stderr=subprocess.STDOUT,check=True)
+ shutil.copy2(w/'validation'/supported.name,supported)
  result=json.loads((w/'validation'/'result.json').read_text())
  assert result['return_code']==0 and len(result['sliced_plates'])==2
  assert all(not x['warning_message'] for x in result['sliced_plates']),result

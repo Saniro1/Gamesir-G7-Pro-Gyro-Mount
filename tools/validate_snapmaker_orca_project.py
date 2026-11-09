@@ -20,7 +20,7 @@ with zipfile.ZipFile(path) as z:
  check('ZIP integrity',z.testzip() is None)
  config=json.loads(z.read('Metadata/project_settings.config'))
  for key,value in dict(printer_model='Snapmaker U1',printer_settings_id='Snapmaker U1 (0.4 nozzle)',curr_bed_type='Textured PEI Plate',
-                       layer_height='0.16',wall_loops='4',sparse_infill_density='25%',sparse_infill_pattern='gyroid',enable_prime_tower='0',
+                       layer_height='0.16',wall_loops='4',sparse_infill_density='25%',sparse_infill_pattern='gyroid',enable_prime_tower='0',support_on_build_plate_only='0',
                        filament_colour=['#000000'],filament_type=['PLA'],nozzle_temperature=['220'],nozzle_temperature_initial_layer=['220'],
                        textured_plate_temp=['65'],textured_plate_temp_initial_layer=['65'],filament_max_volumetric_speed=['8']).items():
   check('Saved '+key,config.get(key)==value,actual=config.get(key))
@@ -61,6 +61,9 @@ with zipfile.ZipFile(path) as z:
    original=trimesh.load_mesh(repo/'printable'/f'G7_Modular_v23_{part}.stl')
    check(f'{plate_index+1}/{part} geometry and bed placement',m.is_watertight and len(m.split())==1 and abs(m.volume-original.volume)<.02 and abs(m.bounds[0,2])<1e-5 and np.all(m.bounds[0,:2]>10) and np.all(m.bounds[1,:2]<260),bounds_mm=m.bounds.tolist())
    if part=='lock_key':check('key is on its side '+str(plate_index+1),abs(m.extents[2]-3.7)<1e-5)
+   if part in ['g7_mount','hook_fit_coupon','box','male_fit_coupon']:
+    check(f'{part} broad end faces bed',abs(m.extents[2]-original.extents[1])<1e-5)
+   if part=='lid':check('lid broad face on bed',abs(m.extents[2]-original.extents[2])<1e-5)
   for i in range(len(mm)):
    for j in range(i+1,len(mm)):
     a,b=mm[i].bounds,mm[j].bounds
@@ -76,7 +79,16 @@ for i in [1,2]:
  g=(args.slice_results/f'plate_{i}.gcode').read_text()
  check(f'plate {i} G-code generated',len(g)>50000 and 'PRINT_START' in g and 'PRINT_END' in g and 'G1 X' in g)
  estimates.append(dict(plate=i,filament_g=re.search(r'; total filament used \[g\] = ([0-9.]+)',g).group(1),time=re.search(r'; estimated printing time \(normal mode\) = (.+)',g).group(1)))
-report=dict(project=path.name,sha256=hashlib.sha256(path.read_bytes()).hexdigest(),snapmaker_orca_release='2.4.1',
+supported=path.with_name(path.stem+'_Supported.3mf')
+with zipfile.ZipFile(supported) as z:
+ check('Supported project ZIP integrity',z.testzip() is None)
+ saved=json.loads(z.read('Metadata/project_settings.config'))
+ for key in ['printer_model','filament_colour','curr_bed_type','enable_support','support_type','support_style','support_on_build_plate_only']:
+  check('Supported project '+key,saved.get(key)==config.get(key))
+ for i in [1,2]:
+  cached=z.read(f'Metadata/plate_{i}.gcode')
+  check(f'plate {i} actual support toolpaths embedded',cached==(args.slice_results/f'plate_{i}.gcode').read_bytes() and b';TYPE:Support' in cached)
+report=dict(supported_project=supported.name,supported_sha256=hashlib.sha256(supported.read_bytes()).hexdigest(),project=path.name,sha256=hashlib.sha256(path.read_bytes()).hexdigest(),snapmaker_orca_release='2.4.1',
             checks=checks,check_count=len(checks),plate_estimates=estimates,physical_print_tested=False,
             notes=['Native CLI validates both saved plates with no slicing warnings.',
                    'CLI --allow-newer-file is needed because 2.4.1 compares its own exported version with a legacy Bambu version constant.',

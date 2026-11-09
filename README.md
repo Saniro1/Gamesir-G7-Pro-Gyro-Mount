@@ -11,7 +11,7 @@ Download the [complete V23 ZIP](releases/G7_Pro_Modular_Reversible_Box2_V23_Comp
 
 ## Snapmaker U1 print project
 
-For a U1 with a 0.4 mm nozzle and regular Snapmaker black PLA, use the [configured two-plate Snapmaker Orca 3MF](slicer/Snapmaker_U1_PLA_Black_0.4/G7_Modular_v23_U1_0.4_Snapmaker_PLA_Black.3mf). It contains fit tests and the four production parts with material/process settings, orientations and supports. [Setup details and estimates](slicer/Snapmaker_U1_PLA_Black_0.4/README.md). Open as a project, review the preview and print the fit-test plate first.
+For a U1 with a 0.4 mm nozzle and regular Snapmaker black PLA, use the [configured two-plate Snapmaker Orca 3MF](slicer/Snapmaker_U1_PLA_Black_0.4/G7_Modular_v23_U1_0.4_Snapmaker_PLA_Black_Supported.3mf). It contains fit tests and the four production parts with material/process settings, revised orientations, and actual sliced support toolpaths. An editable unsliced companion is included alongside it. [Setup details and estimates](slicer/Snapmaker_U1_PLA_Black_0.4/README.md). Open as a project, review the preview and print the fit-test plate first.
 
 ## Start with the fit tests
 
