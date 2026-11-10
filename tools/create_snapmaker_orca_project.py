@@ -1,4 +1,4 @@
-"""Build the two-plate U1 0.4 mm regular Snapmaker PLA Black project.
+"""Build two-plate U1 0.4 mm projects: V23–28 PLA; V29 matte PETG.
 
 Uses manufacturer machine/material profiles bundled with Snapmaker Orca 2.4.1;
 adds mechanical-part process settings without changing model geometry. Use the
@@ -7,17 +7,17 @@ existing checkout. See slicer/Snapmaker_U1_PLA_Black_0.4/README.md for details.
 from pathlib import Path
 import json,shutil,sys,numpy as np,trimesh
 import argparse,os,subprocess
-parser=argparse.ArgumentParser(description='Create and optionally slice a U1 PLA Black project using Snapmaker Orca 2.4.1.')
+parser=argparse.ArgumentParser(description='Create and optionally slice a U1 material-specific project using Snapmaker Orca 2.4.1.')
 parser.add_argument('--resources',type=Path,required=True,help='Snapmaker Orca resources directory')
 parser.add_argument('--orca',required=True,help='Snapmaker Orca executable or runtime wrapper')
 parser.add_argument('--workdir',type=Path,required=True,help='Writable scratch directory for oriented meshes and logs')
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28],default=28)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29],default=29)
 parser.add_argument('--validate',action='store_true',help='Reopen and slice both plates, retaining results in workdir')
 args=parser.parse_args()
 VERSION=args.design_version
 repo=Path(__file__).resolve().parents[1]
 r=args.resources.resolve()/'profiles'/'Snapmaker'
-o=repo/'slicer'/('Snapmaker_U1_PLA_Black_0.4' if VERSION==23 else f'Snapmaker_U1_PLA_Black_0.4_V{VERSION}')
+o=repo/'slicer'/('Snapmaker_U1_PLA_Black_0.4' if VERSION==23 else f'Snapmaker_U1_{"IEMAI_Matte_PETG" if VERSION>=29 else "PLA"}_Black_0.4_V{VERSION}')
 w=args.workdir.resolve()
 o.mkdir(parents=True,exist_ok=True)
 (w/'models').mkdir(parents=True,exist_ok=True)
@@ -51,6 +51,33 @@ if VERSION>=24:
  process['support_base_pattern_spacing']='3.0'
 filament['filament_max_volumetric_speed']=['8']
 filament.update(name='Snapmaker PLA Basic Black @U1 - G7',filament_settings_id=['Snapmaker PLA Basic Black @U1 - G7'],default_filament_colour=['#000000'],filament_colour=['#000000'])
+# V29: conservative generic-derived IEMAI matte PETG starting profile.
+# Brand-specific tuning is unmeasured; no active chamber heat, top cover removed.
+if VERSION>=29:
+ filament=profile('filament','Generic PETG')
+ filament.update(inherits='Generic PETG', **{'from':'User'})
+ for k in ['setting_id','renamed_from','description']:filament.pop(k,None)
+ filament.update(name='IEMAI Matte PETG Black - U1 open top - starting profile',
+  filament_settings_id=['IEMAI Matte PETG Black - U1 open top - starting profile'],
+  filament_vendor=['IEMAI'],filament_type=['PETG'],filament_diameter=['1.75'],
+  default_filament_colour=['#000000'],filament_colour=['#000000'],
+  nozzle_temperature=['245'],nozzle_temperature_initial_layer=['245'],
+  textured_plate_temp=['75'],textured_plate_temp_initial_layer=['80'],
+  filament_max_volumetric_speed=['4'],activate_chamber_temp_control=['0'],
+  chamber_temperature=['0'],chamber_temperatures=['0'],additional_cooling_fan_speed=['0'],
+  fan_min_speed=['20'],fan_max_speed=['40'],close_fan_the_first_x_layers=['3'],
+  overhang_fan_speed=['60'],support_material_interface_fan_speed=['40'],
+  during_print_exhaust_fan_speed=['0'],complete_print_exhaust_fan_speed=['0'])
+ process.update(name='G7 V29 - matte PETG open-top U1 - 0.16mm',
+  print_settings_id='G7 V29 - matte PETG open-top U1 - 0.16mm',
+  outer_wall_speed=['30','30'],inner_wall_speed=['45','45'],
+  sparse_infill_speed=['55','55'],internal_solid_infill_speed=['45','45'],
+  top_surface_speed=['30','30'],gap_infill_speed='30',
+  initial_layer_speed=['15','15'],initial_layer_infill_speed=['20','20'],
+  bridge_speed=['18','18'],internal_bridge_speed=['20','20'],
+  support_speed=['35','35'],support_interface_speed=['25','25'],
+  support_object_xy_distance='0.5',support_interface_spacing='0.5')
+
 # CLI needs speed/acceleration vectors explicitly; the GUI normally migrates
 # legacy scalar speed entries while reading system profiles.
 for k in ['gap_infill_speed','overhang_totally_speed','initial_layer_acceleration','ironing_speed',
@@ -81,11 +108,12 @@ for name,parts in [('01 - Fit tests first',['hook_fit_coupon','universal_receive
    params['enable_support']='0'
    params['brim_type']='no_brim'
   if part=='lock_key':params.update(sparse_infill_density='100%',outer_wall_speed='25,25',inner_wall_speed='30,30',support_type='normal(auto)',support_style='snug',support_interface_top_layers='1',support_interface_spacing='0.40',support_base_pattern_spacing='3.0',support_top_z_distance='0.20')
+  if VERSION>=29 and part=='lock_key':params.update(support_interface_spacing='0.5',support_top_z_distance='0.24')
   objs.append(dict(path=str(path),count=1,filaments=[1],pos_x=[45+50*len(objs)],pos_y=[100],pos_z=[0],print_params=params))
  plates.append(dict(plate_name=name,need_arrange=False,objects=objs))
 (w/'assemble.json').write_text(json.dumps(dict(plates=plates),indent=2)+'\n')
 
-project=o/f'G7_Modular_v{VERSION}_U1_0.4_Snapmaker_PLA_Black.3mf'
+project=o/f'G7_Modular_v{VERSION}_U1_0.4_{"IEMAI_Matte_PETG" if VERSION>=29 else "Snapmaker_PLA"}_Black.3mf'
 env=dict(os.environ,LC_ALL='C')
 command=[args.orca,'--debug','2','--outputdir',str(w/'export'),
          '--load-assemble-list',str(w/'assemble.json'),

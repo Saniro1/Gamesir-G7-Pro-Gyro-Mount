@@ -5,11 +5,11 @@ import numpy as np,trimesh
 import argparse
 parser=argparse.ArgumentParser(description='Verify the saved U1 project and actual Snapmaker Orca slice results.')
 parser.add_argument('--slice-results',type=Path,required=True,help='Directory containing result.json, settings.json and plate_1/2.gcode')
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28],default=28)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29],default=29)
 args=parser.parse_args()
 VERSION=args.design_version
-repo=Path(__file__).resolve().parents[1];folder=repo/'slicer'/('Snapmaker_U1_PLA_Black_0.4' if VERSION==23 else f'Snapmaker_U1_PLA_Black_0.4_V{VERSION}')
-path=folder/f'G7_Modular_v{VERSION}_U1_0.4_Snapmaker_PLA_Black.3mf'
+repo=Path(__file__).resolve().parents[1];folder=repo/'slicer'/('Snapmaker_U1_PLA_Black_0.4' if VERSION==23 else f'Snapmaker_U1_{"IEMAI_Matte_PETG" if VERSION>=29 else "PLA"}_Black_0.4_V{VERSION}')
+path=folder/f'G7_Modular_v{VERSION}_U1_0.4_{"IEMAI_Matte_PETG" if VERSION>=29 else "Snapmaker_PLA"}_Black.3mf'
 NS='http://schemas.microsoft.com/3dmanufacturing/core/2015/02';P='http://schemas.microsoft.com/3dmanufacturing/production/2015/06'
 checks=[]
 def check(name,value,**kw):
@@ -22,10 +22,13 @@ with zipfile.ZipFile(path) as z:
  check('ZIP integrity',z.testzip() is None)
  config=json.loads(z.read('Metadata/project_settings.config'))
  for key,value in dict(printer_model='Snapmaker U1',printer_settings_id='Snapmaker U1 (0.4 nozzle)',curr_bed_type='Textured PEI Plate',
-                       layer_height='0.16',wall_loops='4',sparse_infill_density='25%',sparse_infill_pattern='gyroid',enable_prime_tower='0',support_on_build_plate_only='0',support_type=('normal(auto)' if VERSION>=24 else 'tree(auto)'),support_style=('snug' if VERSION>=24 else 'tree_slim'),support_top_z_distance='0.32',support_interface_top_layers='2',support_interface_spacing='0.4',tree_support_branch_diameter='2',tree_support_wall_count='1',
-                       filament_colour=['#000000'],filament_type=['PLA'],nozzle_temperature=['220'],nozzle_temperature_initial_layer=['220'],
-                       textured_plate_temp=['65'],textured_plate_temp_initial_layer=['65'],filament_max_volumetric_speed=['8']).items():
+                       layer_height='0.16',wall_loops='4',sparse_infill_density='25%',sparse_infill_pattern='gyroid',enable_prime_tower='0',support_on_build_plate_only='0',support_type=('normal(auto)' if VERSION>=24 else 'tree(auto)'),support_style=('snug' if VERSION>=24 else 'tree_slim'),support_top_z_distance='0.32',support_interface_top_layers='2',support_interface_spacing=('0.5' if VERSION>=29 else '0.4'),tree_support_branch_diameter='2',tree_support_wall_count='1',
+                       filament_colour=['#000000'],filament_type=['PETG' if VERSION>=29 else 'PLA'],nozzle_temperature=['245' if VERSION>=29 else '220'],nozzle_temperature_initial_layer=['245' if VERSION>=29 else '220'],
+                       textured_plate_temp=['75' if VERSION>=29 else '65'],textured_plate_temp_initial_layer=['80' if VERSION>=29 else '65'],filament_max_volumetric_speed=['4' if VERSION>=29 else '8']).items():
   check('Saved '+key,config.get(key)==value,actual=config.get(key))
+ if VERSION>=29:
+  for key,value in dict(filament_diameter=['1.75'],activate_chamber_temp_control=['0'],additional_cooling_fan_speed=['0'],fan_min_speed=['20'],fan_max_speed=['40'],close_fan_the_first_x_layers=['3']).items():
+   check('PETG open-top '+key,config.get(key)==value,actual=config.get(key))
  if VERSION>=24:
   check('straight parallel support pattern, no branches',config['support_type']=='normal(auto)' and config['support_base_pattern']=='rectilinear' and config['support_base_pattern_spacing']=='3')
  check('0.4 mm U1 nozzles',config['nozzle_diameter']==['0.4']*4)
@@ -81,6 +84,8 @@ for key in ['printer_model','printer_settings_id','curr_bed_type','filament_colo
 estimates=[]
 for i in [1,2]:
  g=(args.slice_results/f'plate_{i}.gcode').read_text()
+ if VERSION>=29:
+  check(f'plate {i} PETG heating commands',all(re.search(r'^'+command+r'\s+S'+str(temp)+r'\b',g,re.M) for command,temp in [('M190',80),('M140',75),('M109',245)]))
  check(f'plate {i} G-code generated',len(g)>50000 and 'PRINT_START' in g and 'PRINT_END' in g and 'G1 X' in g)
  estimates.append(dict(plate=i,filament_g=re.search(r'; total filament used \[g\] = ([0-9.]+)',g).group(1),time=re.search(r'; estimated printing time \(normal mode\) = (.+)',g).group(1)))
 supported=path.with_name(path.stem+'_Supported.3mf')

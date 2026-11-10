@@ -1,4 +1,4 @@
-"""Build portable multi-object 3MFs and check actual exported V23 through V28 meshes.
+"""Build portable multi-object 3MFs and check actual exported V23 through V29 meshes.
 
 Run after tools/build.sh's OpenSCAD exports. No controller/device model exists;
 these tests assess printed-part geometry only, not hardware fit or strength.
@@ -12,18 +12,24 @@ import zipfile
 import xml.etree.ElementTree as ET
 import numpy as np
 import trimesh
+from design_frames import dock_tilt,transform_points
 
 parser=argparse.ArgumentParser()
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28],default=28)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29],default=29)
 args=parser.parse_args()
 VERSION=args.design_version
-SHIFT=np.array([0.,-30. if VERSION>=27 else -40.,{24:8.,25:3.,26:-7.0285,27:-7.0285,28:-7.0285}[VERSION]]) if VERSION>=24 else np.zeros(3)
+SHIFT=np.array([0.,-30. if VERSION>=27 else -40.,{24:8.,25:3.,26:-7.0285,27:-7.0285,28:-7.0285,29:-7.0285}[VERSION]]) if VERSION>=24 else np.zeros(3)
 ROOT = Path(__file__).resolve().parents[1]
 REPORT=ROOT/'docs'/('validation.json' if VERSION==23 else f'validation_v{VERSION}.json')
 REPORT.unlink(missing_ok=True)
 PARTS = ('g7_mount', 'box', 'lid', 'lock_key', 'universal_receiver',
          'male_fit_coupon', 'hook_fit_coupon')
 M = {p: trimesh.load_mesh(ROOT / 'printable' / f'G7_Modular_v{VERSION}_{p}.stl') for p in PARTS}
+TILT=dock_tilt(VERSION)
+UNTILT=np.linalg.inv(TILT)
+SLIDE=TILT[:3,:3]@np.array([0.,1.,0.])
+INTERFACE_MOUNT=M['g7_mount'].copy()
+INTERFACE_MOUNT.apply_transform(UNTILT)
 TOL = 1e-4  # mm^3; manifold float32 intersection noise
 checks = []
 
@@ -56,6 +62,8 @@ def assembly(up=False):
         if up:
             result[p].vertices[:, :2] = 2 * (np.array([11.5, 61.4])+SHIFT[:2]) - result[p].vertices[:, :2]
     result['lock_key'].apply_translation(np.array([11.5, 61.4, 23.7])+SHIFT)
+    for name,mesh in result.items():
+        if name!='g7_mount':mesh.apply_transform(TILT)
     return result
 
 
@@ -72,18 +80,19 @@ for up in (False, True):
         check(f'{orientation}: {a}/{b} assembled clearance', v < TOL, overlap_mm3=v)
     # 0.25 mm samples across the entire 40 mm insertion/removal path, key removed.
     for p in ('box', 'lid'):
-        values = [overlap(pose['g7_mount'], translated(pose[p], [0, d, 0]))
+        values = [overlap(pose['g7_mount'], translated(pose[p], d*SLIDE))
                   for d in np.arange(0, 40.01, .25)]
         check(f'{orientation}: {p} insertion path', max(values) < TOL,
               samples=len(values), max_overlap_mm3=max(values))
     # With key installed, outward motion must be blocked before rail disengages.
-    v = overlap(pose['lock_key'], translated(pose['box'], [0, 1.3, 0]))
+    v = overlap(pose['lock_key'], translated(pose['box'], 1.3*SLIDE))
     check(f'{orientation}: key blocks withdrawal', v > .1, overlap_mm3=v)
     # No support-arm contact before the new receiver stop. At -0.3 mm, contact
     # must be with the low stop, never the higher support links or enclosure.
-    v = overlap(pose['g7_mount'], translated(pose['box'], [0, -.19, 0]))
+    v = overlap(pose['g7_mount'], translated(pose['box'], -.19*SLIDE))
     check(f'{orientation}: approach to closed stop', v < TOL, overlap_mm3=v)
-    hit = common(pose['g7_mount'], translated(pose['box'], [0, -.3, 0]))
+    hit = common(pose['g7_mount'], translated(pose['box'], -.3*SLIDE))
+    hit.apply_transform(UNTILT)
     check(f'{orientation}: stop takes contact', len(hit.faces) > 0 and hit.volume > 1
           and hit.bounds[0, 1] >= 51.29+SHIFT[1] and hit.bounds[1, 2] <= 28.56+SHIFT[2],
           overlap_mm3=float(hit.volume), bounds_mm=hit.bounds.tolist())
@@ -92,7 +101,7 @@ for up in (False, True):
 receiver = translated(M['universal_receiver'], np.array([11.5, 61.4, 23.7])+SHIFT)
 region = trimesh.creation.box(extents=[20.5, 25.8, 4.85])
 region.apply_translation(np.array([11.5, 61.7, 26.125])+SHIFT)
-cut = common(M['g7_mount'], region)
+cut = common(INTERFACE_MOUNT, region)
 delta = float(trimesh.boolean.difference([cut,receiver],engine='manifold').volume + trimesh.boolean.difference([receiver,cut],engine='manifold').volume)
 check('portable receiver matches integrated receiver', delta < .002, symmetric_difference_mm3=float(delta))
 
@@ -101,12 +110,12 @@ check('portable receiver matches integrated receiver', delta < .002, symmetric_d
 # dovetail channel. This catches a source/export drift back to the thin roof.
 probe = trimesh.creation.box(extents=[1, 1, 1])
 probe.apply_translation(np.array([2.5, 73.3, 28.25])+SHIFT)
-roof_volume = common(M['g7_mount'], probe).volume
+roof_volume = common(INTERFACE_MOUNT, probe).volume
 check('key slot roof is 0.57 mm thick', abs(roof_volume - .57) < 1e-4,
       measured_thickness_mm=float(roof_volume))
 probe = trimesh.creation.box(extents=[1, 1, 2.4])
 probe.apply_translation(np.array([2.5, 73.3, 24.9])+SHIFT)
-floor_volume = common(M['g7_mount'], probe).volume
+floor_volume = common(INTERFACE_MOUNT, probe).volume
 check('key slot retains 2.08 mm floor', abs(floor_volume - 2.08) < 1e-4,
       measured_thickness_mm=float(floor_volume))
 
@@ -118,6 +127,7 @@ for d in np.arange(0, 28.01, .25):
     hit = common(M['g7_mount'], translated(key, [d, 0, 0]))
     if len(hit.faces) and hit.volume > TOL:
         volumes.append(float(hit.volume))
+        hit.apply_transform(UNTILT)
         hit_bounds.append(hit.bounds.tolist())
 check('key insertion interference confined to flex bump', bool(volumes)
       and all(b[0][2] >= 27.979+SHIFT[2] and b[1][2] <= 28.251+SHIFT[2] for b in hit_bounds),
@@ -159,8 +169,8 @@ else:
         before=common(old,probe);after=common(M['g7_mount'],probe)
         check(f'clip at X={x}: 10 mm to 9 mm',abs(before.extents[2]-10)<.001 and abs(after.extents[2]-9)<.001,
               old_length_mm=float(before.extents[2]),new_length_mm=float(after.extents[2]))
-    check(f'receiver exactly {int(-SHIFT[1])} mm higher than V23',abs(M['g7_mount'].bounds[1,1]-(old.bounds[1,1]+SHIFT[1]))<1e-4,
-          previous_open_end_y_mm=float(old.bounds[1,1]),new_open_end_y_mm=float(M['g7_mount'].bounds[1,1]))
+    check(f'receiver exactly {int(-SHIFT[1])} mm higher than V23',abs(INTERFACE_MOUNT.bounds[1,1]-(old.bounds[1,1]+SHIFT[1]))<1e-4,
+          previous_open_end_y_mm=float(old.bounds[1,1]),new_open_end_y_mm=float(INTERFACE_MOUNT.bounds[1,1]))
     if VERSION<=25:
         check('raised module male head clears retained upper bend',assembly()['box'].bounds[0,2]-M['hook_fit_coupon'].bounds[1,2]>2,
               clearance_mm=float(assembly()['box'].bounds[0,2]-M['hook_fit_coupon'].bounds[1,2]))
@@ -168,17 +178,24 @@ else:
         previous_hook=trimesh.load_mesh(ROOT/'printable'/'G7_Modular_v25_hook_fit_coupon.stl')
         base_outer=M['hook_fit_coupon'].bounds[1,2]
         receiver_outer=M['universal_receiver'].bounds[1,2]+23.7+SHIFT[2]
-        check('receiver face 5 mm inside main base',abs(base_outer-receiver_outer-5)<.001,base_outer_z_mm=float(base_outer),receiver_outer_z_mm=float(receiver_outer),inset_mm=float(base_outer-receiver_outer))
+        check(('receiver upper edge 5 mm inside main base' if VERSION>=29 else 'receiver face 5 mm inside main base'),abs(base_outer-receiver_outer-5)<.001,base_outer_z_mm=float(base_outer),receiver_outer_z_mm=float(receiver_outer),inset_mm=float(base_outer-receiver_outer))
         check('main base depth unchanged from V25',abs(base_outer-previous_hook.bounds[1,2])<.001,change_mm=float(base_outer-previous_hook.bounds[1,2]))
     if VERSION>=27:
         previous=trimesh.load_mesh(ROOT/'printable'/'G7_Modular_v26_g7_mount.stl')
-        check('receiver 10 mm lower than V26',abs(M['g7_mount'].bounds[1,1]-previous.bounds[1,1]-10)<.001,lowering_mm=float(M['g7_mount'].bounds[1,1]-previous.bounds[1,1]))
+        check('receiver 10 mm lower than V26',abs(INTERFACE_MOUNT.bounds[1,1]-previous.bounds[1,1]-10)<.001,lowering_mm=float(INTERFACE_MOUNT.bounds[1,1]-previous.bounds[1,1]))
         for up in [False,True]:
             gap=assembly(up)['box'].bounds[0,1]-M['hook_fit_coupon'].bounds[1,1]
             check(f'upper bridge clearance USB up={up}',gap>=7.99,clearance_mm=float(gap))
     if VERSION==28:
         previous=trimesh.load_mesh(ROOT/'printable'/'G7_Modular_v27_g7_mount.stl')
         check('V27 dock end and base depth retained',np.allclose(M['g7_mount'].bounds[1,1:],previous.bounds[1,1:],atol=.001),current_max_yz_mm=M['g7_mount'].bounds[1,1:].tolist(),previous_max_yz_mm=previous.bounds[1,1:].tolist())
+    if VERSION==29:
+        targets=np.array([[1.25,18.8,21.5215],[1.25,44.6,21.5215]])
+        expected=transform_points(targets,TILT)
+        actual=np.array([M['g7_mount'].vertices[np.linalg.norm(M['g7_mount'].vertices-p,axis=1).argmin()] for p in expected])
+        check('tilt endpoints present in exported mount',np.max(np.linalg.norm(actual-expected,axis=1))<.001,actual_mm=actual.tolist())
+        check('slider upper edge stays fixed',np.linalg.norm(actual[0]-targets[0])<.001,change_mm=float(np.linalg.norm(actual[0]-targets[0])))
+        check('slider lower edge 5 mm inward',abs(targets[1,2]-actual[1,2]-5)<.001,inward_mm=float(targets[1,2]-actual[1,2]),angle_degrees=float(np.degrees(np.arcsin(5/25.8))))
     if VERSION==25:
         previous=trimesh.load_mesh(ROOT/'printable'/'G7_Modular_v24_g7_mount.stl')
         old_coupon=trimesh.load_mesh(ROOT/'printable'/'G7_Modular_v24_hook_fit_coupon.stl')

@@ -3,7 +3,7 @@ from pathlib import Path
 import zipfile,argparse
 
 parser=argparse.ArgumentParser()
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28],default=28)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29],default=29)
 args=parser.parse_args()
 root = Path(__file__).resolve().parents[1]
 paths = [root/'README.md', root/'.gitignore']

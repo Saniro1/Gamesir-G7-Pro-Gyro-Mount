@@ -1,60 +1,44 @@
 # GameSir G7 Pro modular reversible gyro mount
 
-**V28 is the current revision:** a smoothly rounded transition replaces the pointed V27 join. The **V27 box position**, **9 mm clips**, **5 mm receiver inset**, **8 mm upper-bridge clearance**, and **thin straight print supports** are retained.
+**V29 is current:** the slider pivots at its upper edge, bringing its bottom **5 mm closer to the controller** (11.17°). The rounded bridge and 9 mm clips remain. This release includes a **Snapmaker U1, 0.4 mm, open-top IEMAI matte PETG black 1.75 mm** starting setup with thin straight supports.
 
-The owner asked for a rounder, more natural-looking curve. V28 uses a rounded crown and a continuous swept-band return, keeping the box position and functional clearances from V27. The revised fit has not yet been physically tested; print the short hook coupon first.
-
-![Receiver face inset relative to the main base](docs/V28_receiver_inset.png)
+![V28 versus V29 slider tilt](docs/V29_slider_tilt.png)
 
 ## Download and print
 
-- [Snapmaker U1 0.4 mm / Snapmaker PLA Black — supported V28 3MF](slicer/Snapmaker_U1_PLA_Black_0.4_V28/G7_Modular_v28_U1_0.4_Snapmaker_PLA_Black_Supported.3mf)
-- [Editable, unsliced V28 project](slicer/Snapmaker_U1_PLA_Black_0.4_V28/G7_Modular_v28_U1_0.4_Snapmaker_PLA_Black.3mf)
-- [Complete V28 ZIP](releases/G7_Pro_Modular_Reversible_Box2_V28_Complete.zip)
-- [Revised attachment STL](printable/G7_Modular_v28_g7_mount.stl) and [9 mm hook test STL](printable/G7_Modular_v28_hook_fit_coupon.stl)
+- [Supported V29 PETG 3MF](slicer/Snapmaker_U1_IEMAI_Matte_PETG_Black_0.4_V29/G7_Modular_v29_U1_0.4_IEMAI_Matte_PETG_Black_Supported.3mf)
+- [Editable unsliced V29 PETG project](slicer/Snapmaker_U1_IEMAI_Matte_PETG_Black_0.4_V29/G7_Modular_v29_U1_0.4_IEMAI_Matte_PETG_Black.3mf)
+- [Revised bracket STL](printable/G7_Modular_v29_g7_mount.stl)
+- [Complete V29 ZIP](releases/G7_Pro_Modular_Reversible_Box2_V29_Complete.zip)
+- [Filament, support and printing instructions](slicer/Snapmaker_U1_IEMAI_Matte_PETG_Black_0.4_V29/README.md)
 
-Open the 3MF **as a project** in Snapmaker Orca 2.4.1 or newer. The supported file includes cached toolpaths and supports; inspect them in Preview. Re-slice if you change anything.
+Open the 3MF **as a project** in Snapmaker Orca 2.4.1 or newer. Check the U1/0.4 mm machine selection and PETG preset, then review Preview. The supported project includes actual sliced support toolpaths. Re-slice after changing settings or deleting parts.
 
-Plate 1 contains the revised hook test, receiver, dovetail coupon and key. Plate 2 contains the complete four-part assembly. **The Box 2 enclosure, lid, key and dovetail profile are unchanged from V23**; reuse those prints if you already have them. To print only the revised attachment, select that object and re-slice rather than sending the cached full-plate job.
+Plate 1 has the hook test, receiver, male fit coupon and key. Plate 2 has the full bracket, Box 2, lid and key. If you already have Box 2, its lid and key, **only the bracket needs reprinting**: their shapes are unchanged. Select the bracket and re-slice to print it alone. The standalone receiver on plate 1 is a fit test, not an additional piece required by the integral bracket.
 
-## Current geometry
+## Geometry and verification
 
-- Trimmed 1 mm from the free ends of both top clips: 10 mm becomes 9 mm. No global scaling or thinning of their sides.
-- Lowered the complete dock/box/key installation 10 mm from V26, leaving it 30 mm above V23.
-- Kept the receiver face 5 mm inward of the main-base reference. A rounded shared crown joins the upper bridge and lower links without the pointed V27 corner; the lower return has a consistent 3.8 mm side-profile thickness. Upper-bridge clearance remains at least 8 mm in both USB orientations.
-- Removed the old long arms and lower dock, and joined the raised receiver with short structural arms.
-- Used sparse straight rectilinear print supports (normal/snug, 3 mm line spacing), 0.32 mm separation and a sparse interface. No tree supports.
+The complete receiver rotates rigidly around its upper face edge. Its lower face moves inward 5 mm; the main clip stays fixed. The supporting links curve into the new inclined receiver. The box and key follow the same tilt, preserving their mating geometry and both USB orientations. The upper slider edge keeps the previous 5 mm inset; the lower edge is now 10 mm inside that same main-base reference. See [V29 measurements](docs/V29_REVISION.md).
 
-The structural arms are permanent parts of the attachment. The thin print supports shown in the slicer preview are removable. See [revision measurements and validation](docs/V28_REVISION.md) and [U1 setup details](slicer/Snapmaker_U1_PLA_Black_0.4_V28/README.md).
+The exported models passed **99 CAD checks**, including the 5 mm movement, unchanged clips, both assemblies and full sliding insertion paths. Both saved PETG plates reopened and sliced without plate warnings; **92 project/slicing checks** passed. These checks do not establish physical shell clearance or strength. The photo shows the desired direction but provides no scale or full controller model. Test the unloaded bracket against the shell, buttons and cables before installing the device.
 
-The controller shell, rear buttons, triggers and cable routes still need a physical check at this new position. Check the short hook first and then the complete mount without loading the device. PLA flexure durability and the strength of the bracket/key have not been physically verified.
+PETG settings are a conservative starting profile derived from the official Snapmaker Generic PETG preset, **not a manufacturer-validated IEMAI profile**. Confirm the temperatures against your spool label. No physical PETG print, flow calibration, latch fatigue or load test has been performed.
 
-## Files and history
+## Files and rebuild
 
-V28 CAD is in [cad/G7_Pro_Modular_v28.scad](cad/G7_Pro_Modular_v28.scad); its seven STLs are in `printable/`, and both assembly views are in `assemblies/`. The V28 CAD reuses the frozen V24 9 mm clip geometry and V23 interface meshes. Its swept upper band tapers smoothly from the unchanged clip root to a rounded crown; the lower band flows from that shared crown to the receiver. The controller-contact clip surfaces remain unchanged.
+Prior revisions, PLA projects and original V22 files are retained. [V28 instructions](docs/V28_README.md) describe the previous position. The original ZIP and all 13 extracted files remain under `originals/`. No license was supplied with the original files; this import does not grant a new license.
 
-The complete original V22 ZIP and all 13 extracted files remain unchanged under `originals/`. V23 through V27 source, prints and projects are retained for history, including the [V23 instructions](docs/V23_README.md). **Use V28 filenames for this revision.** No license was supplied with the original files; this import does not assert ownership or grant a new license.
-
-## Rebuild
-
-Use the existing checkout; no Git worktree is needed. Requires OpenSCAD 2021.01 and Python 3.12:
+Requires OpenSCAD 2021.01 and Python 3.12:
 
 ```bash
 python -m venv .venv
 .venv/bin/python -m pip install -r tools/requirements.txt
 source .venv/bin/activate
-./tools/build.sh 28
-```
-
-The build exports all seven V28 meshes and runs the geometry/assembly checks, writing `docs/validation_v28.json`. Explicitly use `./tools/build.sh 23` to reproduce the old version.
-
-To regenerate the U1 projects and validate the saved file in the actual slicer:
-
-```bash
-.venv/bin/python tools/create_snapmaker_orca_project.py --design-version 28 \
+./tools/build.sh 29
+.venv/bin/python tools/create_snapmaker_orca_project.py --design-version 29 \
   --resources /path/to/SnapmakerOrca/resources \
-  --orca /path/to/snapmaker-orca --workdir /tmp/g7-u1-v28 --validate
-python tools/package_release.py --design-version 28
+  --orca /path/to/snapmaker-orca --workdir /tmp/g7-u1-v29 --validate
+python tools/package_release.py --design-version 29
 ```
 
-The saved V28 project passed 84 project/slicing checks, and the V28 geometry passed 97 CAD checks. These establish model and slicer consistency, not physical fit or a load rating.
+V29 exports bracket components through OpenSCAD, then joins them with manifold3d: CGAL in OpenSCAD 2021.01 fails to union the rotated imported receiver reliably. Use the build script for the finished bracket, rather than directly exporting the full mount from SCAD. Other parts export directly. The seven STLs, assembly views, validation reports, profile JSONs and reproducible tools are included in the ZIP.
