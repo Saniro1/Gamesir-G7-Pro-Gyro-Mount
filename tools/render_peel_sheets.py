@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from matplotlib.collections import LineCollection
 import argparse
-p=argparse.ArgumentParser();p.add_argument('--workdir',type=Path,required=True);args=p.parse_args()
-root=Path(__file__).resolve().parents[1];folder=root/'slicer/Snapmaker_U1_IEMAI_Matte_PETG_Black_0.4_V31'
+p=argparse.ArgumentParser();p.add_argument('--workdir',type=Path,required=True);p.add_argument('--design-version',type=int,choices=[31,32],default=32);args=p.parse_args()
+root=Path(__file__).resolve().parents[1];folder=root/f'slicer/Snapmaker_U1_IEMAI_Matte_PETG_Black_0.4_V{args.design_version}'
 fig=plt.figure(figsize=(13,7),facecolor='#f7f8fa')
 for i,part in enumerate(['g7_mount','box']):
  ax=fig.add_subplot(1,3,i+1,projection='3d')
@@ -36,6 +36,6 @@ for line in (args.workdir/'validation/plate_2.gcode').read_text().splitlines():
   colors.append('#ce7c18' if is_sheet else '#647282')
  pos=new
 ax.add_collection(LineCollection(segments,colors=colors,linewidths=1.5));ax.autoscale();ax.set_aspect('equal');ax.set_title('Actual bracket extrusion paths\nat Z = 10.12 mm',fontsize=12);ax.set_xlabel('X (mm)');ax.set_ylabel('Y (mm)');ax.grid(alpha=.15)
-fig.suptitle('V31 — thin, separate sheets to peel away individually',fontsize=18)
-fig.text(.5,.05,'Amber: disposable sheets • Transparent gray: unchanged accessory\n0.45 mm sheets • 0.32 mm top air gap • no shared raft or dense support roof\nMesh and G-code checks only; physical removal force has not been tested.',ha='center',fontsize=11)
+fig.suptitle(f'V{args.design_version} — thin, separate sheets to peel away individually',fontsize=18)
+fig.text(.5,.05,'Amber: disposable sheets • Transparent gray: accessory\n0.45 mm sheets • 0.32 mm top air gap • no shared raft or dense support roof\nMesh and G-code checks only; physical removal force has not been tested.',ha='center',fontsize=11)
 fig.tight_layout(rect=(0,.17,1,.93));fig.savefig(folder/'peel_sheet_preview.png',dpi=160,facecolor=fig.get_facecolor())

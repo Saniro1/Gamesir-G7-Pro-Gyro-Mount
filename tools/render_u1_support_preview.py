@@ -9,11 +9,11 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection,Line3DCollection
 
 parser=argparse.ArgumentParser()
 parser.add_argument('--workdir',type=Path,required=True)
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31],default=31)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31,32],default=32)
 args=parser.parse_args()
 if args.design_version>=31:
  import subprocess,sys
- subprocess.run([sys.executable,str(Path(__file__).with_name('render_peel_sheets.py')),'--workdir',str(args.workdir)],check=True)
+ subprocess.run([sys.executable,str(Path(__file__).with_name('render_peel_sheets.py')),'--workdir',str(args.workdir),'--design-version',str(args.design_version)],check=True)
  raise SystemExit(0)
 repo=Path(__file__).resolve().parents[1]
 plates=json.loads((args.workdir/'assemble.json').read_text())['plates']

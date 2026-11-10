@@ -6,7 +6,7 @@ from scipy.spatial import cKDTree
 import argparse
 parser=argparse.ArgumentParser(description='Verify the saved U1 project and actual Snapmaker Orca slice results.')
 parser.add_argument('--slice-results',type=Path,required=True,help='Directory containing result.json, settings.json and plate_1/2.gcode')
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31],default=31)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31,32],default=32)
 args=parser.parse_args()
 VERSION=args.design_version
 repo=Path(__file__).resolve().parents[1];folder=repo/'slicer'/('Snapmaker_U1_PLA_Black_0.4' if VERSION==23 else f'Snapmaker_U1_{"IEMAI_Matte_PETG" if VERSION>=29 else "PLA"}_Black_0.4_V{VERSION}')
@@ -44,6 +44,7 @@ with zipfile.ZipFile(path) as z:
  plates=meta.findall('plate');check('two plates',len(plates)==2)
  names={o.attrib['id']:o.find("metadata[@key='name']").attrib['value'] for o in meta.findall('object')}
  key_ids=[k for k,v in names.items() if v.startswith('lock_key')]
+ if VERSION>=32:check('No locking key in current project',not key_ids)
  for k in key_ids:
   o=meta.find(f"object[@id='{k}']");over={m.attrib['key']:m.attrib['value'] for m in o.findall('metadata')}
   # Support/brim inherited, not disabled as in the flat orientation trial.
@@ -65,12 +66,12 @@ with zipfile.ZipFile(path) as z:
  world={}
  for it in root.findall(f'{{{NS}}}build/{{{NS}}}item'):
   oid=it.attrib['objectid'];m=get_mesh('3D/3dmodel.model',oid);m.apply_transform(transform(it.attrib.get('transform')));world[oid]=m
- check('8 independently printable objects',len(world)==8)
+ check('Correct number of independently printable objects',len(world)==(6 if VERSION>=32 else 8))
  bounds=[]
  sheet_toolpath_targets={1:[],2:[]}
  for plate_index,plate in enumerate(plates):
   ids=[it.find("metadata[@key='object_id']").attrib['value'] for it in plate.findall('model_instance')]
-  check('four objects on plate '+str(plate_index+1),len(ids)==4)
+  check('Correct object count on plate '+str(plate_index+1),len(ids)==(3 if VERSION>=32 else 4))
   mm=[]
   for oid in ids:
    m=world[oid].copy();m.apply_translation([-324*plate_index,0,0]);mm.append(m)

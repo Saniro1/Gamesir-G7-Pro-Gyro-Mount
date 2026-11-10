@@ -12,7 +12,7 @@ parser=argparse.ArgumentParser(description='Create and optionally slice a U1 mat
 parser.add_argument('--resources',type=Path,required=True,help='Snapmaker Orca resources directory')
 parser.add_argument('--orca',required=True,help='Snapmaker Orca executable or runtime wrapper')
 parser.add_argument('--workdir',type=Path,required=True,help='Writable scratch directory for oriented meshes and logs')
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31],default=31)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31,32],default=32)
 parser.add_argument('--validate',action='store_true',help='Reopen and slice both plates, retaining results in workdir')
 args=parser.parse_args()
 VERSION=args.design_version
@@ -105,6 +105,7 @@ if VERSION>=31:(o/'custom_supports').mkdir(exist_ok=True)
 for name,parts in [('01 - Fit tests first',['hook_fit_coupon','universal_receiver','male_fit_coupon','lock_key']),('02 - Complete mount',['g7_mount','box','lid','lock_key'])]:
  objs=[]
  for part in parts:
+  if VERSION>=32 and part=='lock_key':continue
   m=trimesh.load_mesh(repo/'printable'/f'G7_Modular_v{VERSION}_{part}.stl')
   # Stand the bracket on its broad outer-hook face, not the small hook tip.
   # Stand Box 2 on its closed end; use the same male-coupon orientation.
@@ -115,7 +116,7 @@ for name,parts in [('01 - Fit tests first',['hook_fit_coupon','universal_receive
   m.apply_translation([-m.bounds[0,0],-m.bounds[0,1],-m.bounds[0,2]])
   if VERSION>=31:
    support,records=make_sheets(m) if part not in ['lid','universal_receiver'] else (None,[])
-   sheet_records[part]=dict(sheets=records,count=len(records),source_geometry_version=30)
+   sheet_records[part]=dict(sheets=records,count=len(records),source_geometry_version=(32 if VERSION>=32 else 30))
    if support is not None:
     support.export(o/'custom_supports'/f'{part}_peel_sheets.stl')
     m=trimesh.util.concatenate([m,support])

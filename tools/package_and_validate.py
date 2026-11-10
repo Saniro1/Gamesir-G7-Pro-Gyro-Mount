@@ -15,15 +15,16 @@ import trimesh
 from design_frames import dock_tilt,transform_points
 
 parser=argparse.ArgumentParser()
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31],default=31)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31,32],default=32)
 args=parser.parse_args()
 VERSION=args.design_version
-SHIFT=np.array([0.,-30. if VERSION>=27 else -40.,{24:8.,25:3.,26:-7.0285,27:-7.0285,28:-7.0285,29:-7.0285,30:-7.0285,31:-7.0285}[VERSION]]) if VERSION>=24 else np.zeros(3)
+SHIFT=np.array([0.,-30. if VERSION>=27 else -40.,{24:8.,25:3.,26:-7.0285,27:-7.0285,28:-7.0285,29:-7.0285,30:-7.0285,31:-7.0285,32:-7.0285}[VERSION]]) if VERSION>=24 else np.zeros(3)
 ROOT = Path(__file__).resolve().parents[1]
 REPORT=ROOT/'docs'/('validation.json' if VERSION==23 else f'validation_v{VERSION}.json')
 REPORT.unlink(missing_ok=True)
 PARTS = ('g7_mount', 'box', 'lid', 'lock_key', 'universal_receiver',
          'male_fit_coupon', 'hook_fit_coupon')
+if VERSION>=32:PARTS=tuple(p for p in PARTS if p!='lock_key')
 M = {p: trimesh.load_mesh(ROOT / 'printable' / f'G7_Modular_v{VERSION}_{p}.stl') for p in PARTS}
 TILT=dock_tilt(VERSION)
 UNTILT=np.linalg.inv(TILT)
@@ -56,12 +57,12 @@ def overlap(a, b):
 
 
 def assembly(up=False):
-    result = {p: M[p].copy() for p in PARTS[:4]}
+    result = {p: M[p].copy() for p in (('g7_mount','box','lid') if VERSION>=32 else PARTS[:4])}
     for p in ('box', 'lid'):
         result[p].apply_translation(np.array([12.5, 64.2, 29.8])+SHIFT)
         if up:
             result[p].vertices[:, :2] = 2 * (np.array([11.5, 61.4])+SHIFT[:2]) - result[p].vertices[:, :2]
-    result['lock_key'].apply_translation(np.array([11.5, 61.4, 23.7])+SHIFT)
+    if 'lock_key' in result:result['lock_key'].apply_translation(np.array([11.5, 61.4, 23.7])+SHIFT)
     for name,mesh in result.items():
         if name!='g7_mount':mesh.apply_transform(TILT)
     return result
@@ -72,7 +73,7 @@ for p, mesh in M.items():
           and len(mesh.split()) == 1 and mesh.volume > 0,
           volume_mm3=float(mesh.volume), bounds_mm=mesh.bounds.tolist(), triangles=len(mesh.faces))
 
-if VERSION>=31:
+if VERSION==31:
     for part in PARTS:
         check(f'{part}: V30 accessory geometry exactly retained',
               (ROOT/'printable'/f'G7_Modular_v{VERSION}_{part}.stl').read_bytes()==(ROOT/'printable'/f'G7_Modular_v30_{part}.stl').read_bytes())
@@ -82,7 +83,7 @@ for up in (False, True):
     orientation = 'USB_up' if up else 'USB_down'
     for a, b in itertools.combinations(pose, 2):
         v = overlap(pose[a], pose[b])
-        check(f'{orientation}: {a}/{b} assembled clearance', v < TOL, overlap_mm3=v)
+        check(f'{orientation}: {a}/{b} assembled clearance or lid-pad preload', v < (.2 if VERSION>=32 and {a,b}=={'box','lid'} else TOL), overlap_mm3=v)
     # 0.25 mm samples across the entire 40 mm insertion/removal path, key removed.
     for p in ('box', 'lid'):
         values = [overlap(pose['g7_mount'], translated(pose[p], d*SLIDE))
@@ -90,8 +91,9 @@ for up in (False, True):
         check(f'{orientation}: {p} insertion path', max(values) < TOL,
               samples=len(values), max_overlap_mm3=max(values))
     # With key installed, outward motion must be blocked before rail disengages.
-    v = overlap(pose['lock_key'], translated(pose['box'], 1.3*SLIDE))
-    check(f'{orientation}: key blocks withdrawal', v > .1, overlap_mm3=v)
+    if VERSION<32:
+        v = overlap(pose['lock_key'], translated(pose['box'], 1.3*SLIDE))
+        check(f'{orientation}: key blocks withdrawal', v > .1, overlap_mm3=v)
     # No support-arm contact before the new receiver stop. At -0.3 mm, contact
     # must be with the low stop, never the higher support links or enclosure.
     v = overlap(pose['g7_mount'], translated(pose['box'], -.19*SLIDE))
@@ -111,47 +113,71 @@ delta = float(trimesh.boolean.difference([cut,receiver],engine='manifold').volum
 check('portable receiver matches integrated receiver', delta < .002, symmetric_difference_mm3=float(delta))
 
 
-# Inspect material over/under the revised slot in a side wall, outside the
-# dovetail channel. This catches a source/export drift back to the thin roof.
-probe = trimesh.creation.box(extents=[1, 1, 1])
-probe.apply_translation(np.array([2.5, 73.3, 28.25])+SHIFT)
-roof_volume = common(INTERFACE_MOUNT, probe).volume
-check('key slot roof is 0.57 mm thick', abs(roof_volume - .57) < 1e-4,
-      measured_thickness_mm=float(roof_volume))
-probe = trimesh.creation.box(extents=[1, 1, 2.4])
-probe.apply_translation(np.array([2.5, 73.3, 24.9])+SHIFT)
-floor_volume = common(INTERFACE_MOUNT, probe).volume
-check('key slot retains 2.08 mm floor', abs(floor_volume - 2.08) < 1e-4,
-      measured_thickness_mm=float(floor_volume))
+if VERSION<32:
+    # Inspect material over/under the revised slot in a side wall, outside the
+    # dovetail channel. This catches a source/export drift back to the thin roof.
+    probe = trimesh.creation.box(extents=[1, 1, 1])
+    probe.apply_translation(np.array([2.5, 73.3, 28.25])+SHIFT)
+    roof_volume = common(INTERFACE_MOUNT, probe).volume
+    check('key slot roof is 0.57 mm thick', abs(roof_volume - .57) < 1e-4,
+          measured_thickness_mm=float(roof_volume))
+    probe = trimesh.creation.box(extents=[1, 1, 2.4])
+    probe.apply_translation(np.array([2.5, 73.3, 24.9])+SHIFT)
+    floor_volume = common(INTERFACE_MOUNT, probe).volume
+    check('key slot retains 2.08 mm floor', abs(floor_volume - 2.08) < 1e-4,
+          measured_thickness_mm=float(floor_volume))
 
-# Key insertion intentionally requires elastic latch deflection. Test that all
-# interference is confined to the flexible tongue, not the rigid bar or grip.
-key = assembly()['lock_key']
-volumes, hit_bounds = [], []
-for d in np.arange(0, 28.01, .25):
-    hit = common(M['g7_mount'], translated(key, [d, 0, 0]))
-    if len(hit.faces) and hit.volume > TOL:
-        volumes.append(float(hit.volume))
-        hit.apply_transform(UNTILT)
-        hit_bounds.append(hit.bounds.tolist())
-check('key insertion interference confined to flex bump', bool(volumes)
-      and all(b[0][2] >= 27.979+SHIFT[2] and b[1][2] <= 28.251+SHIFT[2] for b in hit_bounds),
-      max_overlap_mm3=max(volumes, default=0),
-      required_tip_deflection_mm=.27, designed_under_tongue_gap_mm=.40)
+    # Key insertion intentionally requires elastic latch deflection. Test that all
+    # interference is confined to the flexible tongue, not the rigid bar or grip.
+    key = assembly()['lock_key']
+    volumes, hit_bounds = [], []
+    for d in np.arange(0, 28.01, .25):
+        hit = common(M['g7_mount'], translated(key, [d, 0, 0]))
+        if len(hit.faces) and hit.volume > TOL:
+            volumes.append(float(hit.volume))
+            hit.apply_transform(UNTILT)
+            hit_bounds.append(hit.bounds.tolist())
+    check('key insertion interference confined to flex bump', bool(volumes)
+          and all(b[0][2] >= 27.979+SHIFT[2] and b[1][2] <= 28.251+SHIFT[2] for b in hit_bounds),
+          max_overlap_mm3=max(volumes, default=0),
+          required_tip_deflection_mm=.27, designed_under_tongue_gap_mm=.40)
 
 # Box/lid detents are intentionally NOT zero-interference in motion. Record
 # them separately; this is not evidence that a printed snap will flex safely.
 lid_motion = [overlap(M['box'], translated(M['lid'], [0, -d, 0]))
               for d in np.arange(0, 35.01, .25)]
 check('lid can clear box after sliding toward negative local Y',
-      lid_motion[-1] < TOL and max(lid_motion) < .1,
+      lid_motion[-1] < TOL and max(lid_motion) < (.4 if VERSION>=32 else .1),
       max_intentional_detent_overlap_mm3=max(lid_motion), samples=len(lid_motion))
 
+if VERSION>=32:
+    check('Box 2 and USB access retained', (ROOT/'printable/G7_Modular_v32_box.stl').read_bytes()==(ROOT/'printable/G7_Modular_v31_box.stl').read_bytes())
+    check('locking key excluded from current parts', 'lock_key' not in PARTS)
+    for x in [-9.,9.]:
+        probe=trimesh.creation.box(extents=[.2,1.,2.18]);probe.apply_translation([x,11.9,3.18])
+        check(f'former key slot at X={x} filled',abs(common(M['universal_receiver'],probe).volume-.436)<1e-4)
+    old_lid=trimesh.load_mesh(ROOT/'printable/G7_Modular_v31_lid.stl')
+    check('lid roof lowered 0.10 mm for closer fit',abs(old_lid.bounds[1,2]-M['lid'].bounds[1,2]-.1)<.001)
+    residual=[]
+    for d in np.arange(0,35.01,.25):
+        lid=translated(M['lid'],[0,-d,0]);hit=common(M['box'],lid)
+        allowed=[]
+        for x in [-14.335,12.335]:
+            for y in [-10.,-3.,4.]:
+                region=trimesh.creation.box(extents=[.032,1.46,.552]);region.apply_translation([x,y-d,22.225]);allowed.append(region)
+        for x in [-14.575,12.575]:
+            region=trimesh.creation.box(extents=[.552,.852,.552]);region.apply_translation([x,8.525,22.215]);allowed.append(region)
+        if len(hit.faces):
+            rest=trimesh.boolean.difference([hit,trimesh.util.concatenate(allowed)],engine='manifold')
+            residual.append(abs(rest.volume) if len(rest.faces) else 0.)
+    check('lid preload confined to 0.03 mm friction pads and existing detents',max(residual,default=0)<1e-4,max_unexpected_overlap_mm3=max(residual,default=0),nominal_pad_preload_mm=.03)
+
 # The preserved box cavity, lid and controller contact geometry must not drift.
-for p in ('box', 'lid'):
-    old = trimesh.load_mesh(ROOT / 'cad' / 'reference' / f'{p}_v22.stl')
-    delta = abs(old.volume + M[p].volume - 2 * common(old, M[p]).volume)
-    check(f'{p}: supplied geometry preserved', delta < .01, symmetric_difference_mm3=float(delta))
+if VERSION<32:
+    for p in ('box', 'lid'):
+        old = trimesh.load_mesh(ROOT / 'cad' / 'reference' / f'{p}_v22.stl')
+        delta = abs(old.volume + M[p].volume - 2 * common(old, M[p]).volume)
+        check(f'{p}: supplied geometry preserved', delta < .01, symmetric_difference_mm3=float(delta))
 if VERSION==23:
     old = trimesh.load_mesh(ROOT / 'cad' / 'reference' / 'mount_v22.stl')
     hook_region = trimesh.creation.box(extents=[35, 22, 45])
@@ -216,7 +242,7 @@ else:
         old_coupon=trimesh.load_mesh(ROOT/'printable'/'G7_Modular_v24_hook_fit_coupon.stl')
         check('dock 5 mm closer to controller than V24',abs(previous.bounds[1,2]-M['g7_mount'].bounds[1,2]-5)<.001,offset_mm=float(previous.bounds[1,2]-M['g7_mount'].bounds[1,2]))
         check('curved bridge 5 mm closer than V24',abs(old_coupon.bounds[1,2]-M['hook_fit_coupon'].bounds[1,2]-5)<.001,offset_mm=float(old_coupon.bounds[1,2]-M['hook_fit_coupon'].bounds[1,2]))
-    for name in ['box','lid','lock_key','male_fit_coupon','universal_receiver']:
+    for name in (['box','male_fit_coupon'] if VERSION>=32 else ['box','lid','lock_key','male_fit_coupon','universal_receiver']):
         old_part=trimesh.load_mesh(ROOT/'printable'/f'G7_Modular_v23_{name}.stl')
         delta=abs(old_part.volume+M[name].volume-2*common(old_part,M[name]).volume)
         check(f'{name}: V23 interface geometry retained',delta<.01,symmetric_difference_mm3=float(delta))
@@ -281,7 +307,7 @@ for a, b in itertools.combinations(layout, 2):
           layout[a].bounds[1, 0] + 11.99 <= layout[b].bounds[0, 0])
 for p, mesh in layout.items():
     check(f'print layout: {p} on bed', abs(mesh.bounds[0, 2]) < 1e-6)
-save_3mf(out / f'G7_Modular_v{VERSION}_Separated_7_Parts.3mf', layout, f'V{VERSION} separated geometry; review orientation and supports in slicer')
+save_3mf(out / f'G7_Modular_v{VERSION}_Separated_{len(PARTS)}_Parts.3mf', layout, f'V{VERSION} separated geometry; review orientation and supports in slicer')
 
 report = dict(status='CAD checks passed; physical hardware fit unverified',
               software=dict(trimesh=trimesh.__version__, numpy=np.__version__),
