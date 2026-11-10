@@ -1,3 +1,5 @@
+> V25 archive. The [V26 project](../Snapmaker_U1_PLA_Black_0.4_V26/README.md) has the receiver face inset 5 mm relative to the main base.
+
 # V25 · Snapmaker U1 · 0.4 mm · Snapmaker PLA Basic Black
 
 Open **G7_Modular_v25_U1_0.4_Snapmaker_PLA_Black_Supported.3mf** as a project in Snapmaker Orca 2.4.1 or newer. It contains the **curved bridge and dock moved 5 mm closer to the shell**, the retained **9 mm clips** and **40 mm raised height**, and **thin straight supports with no branches**, plus the actual sliced toolpaths. Open Preview before printing. The companion file without `_Supported` is editable and unsliced. Re-slice after any change.

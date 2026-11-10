@@ -1,3 +1,5 @@
+> V25 history. V26 recesses the receiver face 5 mm relative to the main base, rather than shifting the base and socket together. See [V26 revision](V26_REVISION.md).
+
 # V25: curved bridge and dock 5 mm closer to the controller
 
 V24's extra outward stand-off made the box stick out farther than the owner wanted. V25 restores curved transitions based on V23 and moves both the bridge and the complete receiver/box/key installation **5 mm inward toward the rear shell**. The 9 mm clips and 40 mm raised height are retained.

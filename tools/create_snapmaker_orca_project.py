@@ -11,7 +11,7 @@ parser=argparse.ArgumentParser(description='Create and optionally slice a U1 PLA
 parser.add_argument('--resources',type=Path,required=True,help='Snapmaker Orca resources directory')
 parser.add_argument('--orca',required=True,help='Snapmaker Orca executable or runtime wrapper')
 parser.add_argument('--workdir',type=Path,required=True,help='Writable scratch directory for oriented meshes and logs')
-parser.add_argument('--design-version',type=int,choices=[23,24,25],default=25)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26],default=26)
 parser.add_argument('--validate',action='store_true',help='Reopen and slice both plates, retaining results in workdir')
 args=parser.parse_args()
 VERSION=args.design_version
