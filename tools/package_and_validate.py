@@ -1,4 +1,4 @@
-"""Build portable multi-object 3MFs and check actual exported V23/V24 meshes.
+"""Build portable multi-object 3MFs and check actual exported V23/V24/V25 meshes.
 
 Run after tools/build.sh's OpenSCAD exports. No controller/device model exists;
 these tests assess printed-part geometry only, not hardware fit or strength.
@@ -14,12 +14,12 @@ import numpy as np
 import trimesh
 
 parser=argparse.ArgumentParser()
-parser.add_argument('--design-version',type=int,choices=[23,24],default=24)
+parser.add_argument('--design-version',type=int,choices=[23,24,25],default=25)
 args=parser.parse_args()
 VERSION=args.design_version
-SHIFT=np.array([0.,-40.,8.]) if VERSION==24 else np.zeros(3)
+SHIFT=np.array([0.,-40.,3. if VERSION==25 else 8.]) if VERSION>=24 else np.zeros(3)
 ROOT = Path(__file__).resolve().parents[1]
-REPORT=ROOT/'docs'/('validation_v24.json' if VERSION==24 else 'validation.json')
+REPORT=ROOT/'docs'/('validation.json' if VERSION==23 else f'validation_v{VERSION}.json')
 REPORT.unlink(missing_ok=True)
 PARTS = ('g7_mount', 'box', 'lid', 'lock_key', 'universal_receiver',
          'male_fit_coupon', 'hook_fit_coupon')
@@ -163,6 +163,11 @@ else:
           previous_open_end_y_mm=float(old.bounds[1,1]),new_open_end_y_mm=float(M['g7_mount'].bounds[1,1]))
     check('raised module male head clears retained upper bend',assembly()['box'].bounds[0,2]-M['hook_fit_coupon'].bounds[1,2]>2,
           clearance_mm=float(assembly()['box'].bounds[0,2]-M['hook_fit_coupon'].bounds[1,2]))
+    if VERSION==25:
+        previous=trimesh.load_mesh(ROOT/'printable'/'G7_Modular_v24_g7_mount.stl')
+        old_coupon=trimesh.load_mesh(ROOT/'printable'/'G7_Modular_v24_hook_fit_coupon.stl')
+        check('dock 5 mm closer to controller than V24',abs(previous.bounds[1,2]-M['g7_mount'].bounds[1,2]-5)<.001,offset_mm=float(previous.bounds[1,2]-M['g7_mount'].bounds[1,2]))
+        check('curved bridge 5 mm closer than V24',abs(old_coupon.bounds[1,2]-M['hook_fit_coupon'].bounds[1,2]-5)<.001,offset_mm=float(old_coupon.bounds[1,2]-M['hook_fit_coupon'].bounds[1,2]))
     for name in ['box','lid','lock_key','male_fit_coupon','universal_receiver']:
         old_part=trimesh.load_mesh(ROOT/'printable'/f'G7_Modular_v23_{name}.stl')
         delta=abs(old_part.volume+M[name].volume-2*common(old_part,M[name]).volume)

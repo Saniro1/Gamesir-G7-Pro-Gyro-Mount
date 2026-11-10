@@ -5,10 +5,10 @@ import numpy as np,trimesh
 import argparse
 parser=argparse.ArgumentParser(description='Verify the saved U1 project and actual Snapmaker Orca slice results.')
 parser.add_argument('--slice-results',type=Path,required=True,help='Directory containing result.json, settings.json and plate_1/2.gcode')
-parser.add_argument('--design-version',type=int,choices=[23,24],default=24)
+parser.add_argument('--design-version',type=int,choices=[23,24,25],default=25)
 args=parser.parse_args()
 VERSION=args.design_version
-repo=Path(__file__).resolve().parents[1];folder=repo/'slicer'/('Snapmaker_U1_PLA_Black_0.4' if VERSION==23 else 'Snapmaker_U1_PLA_Black_0.4_V24')
+repo=Path(__file__).resolve().parents[1];folder=repo/'slicer'/('Snapmaker_U1_PLA_Black_0.4' if VERSION==23 else f'Snapmaker_U1_PLA_Black_0.4_V{VERSION}')
 path=folder/f'G7_Modular_v{VERSION}_U1_0.4_Snapmaker_PLA_Black.3mf'
 NS='http://schemas.microsoft.com/3dmanufacturing/core/2015/02';P='http://schemas.microsoft.com/3dmanufacturing/production/2015/06'
 checks=[]
@@ -22,11 +22,11 @@ with zipfile.ZipFile(path) as z:
  check('ZIP integrity',z.testzip() is None)
  config=json.loads(z.read('Metadata/project_settings.config'))
  for key,value in dict(printer_model='Snapmaker U1',printer_settings_id='Snapmaker U1 (0.4 nozzle)',curr_bed_type='Textured PEI Plate',
-                       layer_height='0.16',wall_loops='4',sparse_infill_density='25%',sparse_infill_pattern='gyroid',enable_prime_tower='0',support_on_build_plate_only='0',support_type=('normal(auto)' if VERSION==24 else 'tree(auto)'),support_style=('snug' if VERSION==24 else 'tree_slim'),support_top_z_distance='0.32',support_interface_top_layers='2',support_interface_spacing='0.4',tree_support_branch_diameter='2',tree_support_wall_count='1',
+                       layer_height='0.16',wall_loops='4',sparse_infill_density='25%',sparse_infill_pattern='gyroid',enable_prime_tower='0',support_on_build_plate_only='0',support_type=('normal(auto)' if VERSION>=24 else 'tree(auto)'),support_style=('snug' if VERSION>=24 else 'tree_slim'),support_top_z_distance='0.32',support_interface_top_layers='2',support_interface_spacing='0.4',tree_support_branch_diameter='2',tree_support_wall_count='1',
                        filament_colour=['#000000'],filament_type=['PLA'],nozzle_temperature=['220'],nozzle_temperature_initial_layer=['220'],
                        textured_plate_temp=['65'],textured_plate_temp_initial_layer=['65'],filament_max_volumetric_speed=['8']).items():
   check('Saved '+key,config.get(key)==value,actual=config.get(key))
- if VERSION==24:
+ if VERSION>=24:
   check('straight parallel support pattern, no branches',config['support_type']=='normal(auto)' and config['support_base_pattern']=='rectilinear' and config['support_base_pattern_spacing']=='3')
  check('0.4 mm U1 nozzles',config['nozzle_diameter']==['0.4']*4)
  meta=E.fromstring(z.read('Metadata/model_settings.config'))

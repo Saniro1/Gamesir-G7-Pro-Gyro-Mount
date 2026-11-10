@@ -11,13 +11,13 @@ parser=argparse.ArgumentParser(description='Create and optionally slice a U1 PLA
 parser.add_argument('--resources',type=Path,required=True,help='Snapmaker Orca resources directory')
 parser.add_argument('--orca',required=True,help='Snapmaker Orca executable or runtime wrapper')
 parser.add_argument('--workdir',type=Path,required=True,help='Writable scratch directory for oriented meshes and logs')
-parser.add_argument('--design-version',type=int,choices=[23,24],default=24)
+parser.add_argument('--design-version',type=int,choices=[23,24,25],default=25)
 parser.add_argument('--validate',action='store_true',help='Reopen and slice both plates, retaining results in workdir')
 args=parser.parse_args()
 VERSION=args.design_version
 repo=Path(__file__).resolve().parents[1]
 r=args.resources.resolve()/'profiles'/'Snapmaker'
-o=repo/'slicer'/('Snapmaker_U1_PLA_Black_0.4' if VERSION==23 else 'Snapmaker_U1_PLA_Black_0.4_V24')
+o=repo/'slicer'/('Snapmaker_U1_PLA_Black_0.4' if VERSION==23 else f'Snapmaker_U1_PLA_Black_0.4_V{VERSION}')
 w=args.workdir.resolve()
 o.mkdir(parents=True,exist_ok=True)
 (w/'models').mkdir(parents=True,exist_ok=True)
@@ -40,11 +40,11 @@ process.update(name=f'G7 V{VERSION} - PLA fit and strength - 0.16mm @U1',print_s
  outer_wall_speed=['40','40'],inner_wall_speed=['60','60'],sparse_infill_speed=['80','80'],internal_solid_infill_speed=['60','60'],top_surface_speed=['35','35'],gap_infill_speed='35',
  initial_layer_speed=['20','20'],initial_layer_infill_speed=['25','25'],bridge_speed=['20','20'],internal_bridge_speed=['25','25'],
  default_acceleration=['1500','1500'],outer_wall_acceleration=['1000','1000'],inner_wall_acceleration=['1500','1500'],travel_speed=['150','150'],
- enable_prime_tower='0',ooze_prevention='0',enable_support='1',support_type=('normal(auto)' if VERSION==24 else 'tree(auto)'),support_style=('snug' if VERSION==24 else 'tree_slim'),support_threshold_angle='30',
+ enable_prime_tower='0',ooze_prevention='0',enable_support='1',support_type=('normal(auto)' if VERSION>=24 else 'tree(auto)'),support_style=('snug' if VERSION>=24 else 'tree_slim'),support_threshold_angle='30',
  support_on_build_plate_only='0',support_top_z_distance='0.32',support_bottom_z_distance='0.32',support_interface_top_layers='2',support_interface_spacing='0.40',support_object_xy_distance='0.45',support_base_pattern_spacing='3.0',tree_support_branch_diameter='2.0',tree_support_wall_count='1',tree_support_with_infill='0',
  support_speed=['50','50'],support_interface_speed=['30','30'],brim_type='outer_only',brim_width='5',brim_object_gap='0.15',
  curr_bed_type='Textured PEI Plate',print_sequence='by layer',elefant_foot_compensation='0.15',xy_hole_compensation='0',xy_contour_compensation='0')
-if VERSION==24:
+if VERSION>=24:
  process['support_base_pattern']='rectilinear'
  process['support_interface_pattern']='rectilinear'
  # Sparse, parallel straight support lines, not branches or cross-hatched grid.

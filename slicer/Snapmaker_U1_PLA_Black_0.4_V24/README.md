@@ -1,3 +1,5 @@
+> V24 archive. The [V25 project](../Snapmaker_U1_PLA_Black_0.4_V25/README.md) is 5 mm closer to the shell and restores curved bridge transitions.
+
 # V24 · Snapmaker U1 · 0.4 mm · Snapmaker PLA Basic Black
 
 Open **G7_Modular_v24_U1_0.4_Snapmaker_PLA_Black_Supported.3mf** as a project in Snapmaker Orca 2.4.1 or newer. It contains the revised **9 mm clips**, **40 mm higher dock**, and **thin straight supports with no branches**, plus the actual sliced toolpaths. Open Preview before printing. The companion file without `_Supported` is editable and unsliced. Re-slice after any change.

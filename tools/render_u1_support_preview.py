@@ -9,7 +9,7 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection,Line3DCollection
 
 parser=argparse.ArgumentParser()
 parser.add_argument('--workdir',type=Path,required=True)
-parser.add_argument('--design-version',type=int,choices=[23,24],default=24)
+parser.add_argument('--design-version',type=int,choices=[23,24,25],default=25)
 args=parser.parse_args()
 repo=Path(__file__).resolve().parents[1]
 plates=json.loads((args.workdir/'assemble.json').read_text())['plates']
@@ -40,4 +40,4 @@ for index,plate in enumerate(plates,1):
 fig.suptitle('G7 Pro · U1 PLA Black · revised print orientations',fontsize=20,fontweight='bold',y=.97)
 fig.text(.5,.055,'Dark: model geometry   •   Amber: actual sliced supports and brims\nCAD/toolpath preview only — physical fit and print performance still require testing',ha='center',fontsize=11,color='#465467')
 fig.subplots_adjust(top=.91,bottom=.12,hspace=.12)
-fig.savefig(repo/'slicer'/('Snapmaker_U1_PLA_Black_0.4' if args.design_version==23 else 'Snapmaker_U1_PLA_Black_0.4_V24')/'support_preview.png',dpi=160,facecolor=fig.get_facecolor(),bbox_inches='tight')
+fig.savefig(repo/'slicer'/('Snapmaker_U1_PLA_Black_0.4' if args.design_version==23 else f'Snapmaker_U1_PLA_Black_0.4_V{args.design_version}')/'support_preview.png',dpi=160,facecolor=fig.get_facecolor(),bbox_inches='tight')

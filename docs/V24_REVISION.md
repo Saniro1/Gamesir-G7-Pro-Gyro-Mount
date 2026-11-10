@@ -1,3 +1,5 @@
+> V24 history. V25 moves its curved bridge and dock 5 mm closer to the shell; see [V25 revision](V25_REVISION.md).
+
 # V24: shorter clips and dock raised 40 mm
 
 The owner's final clarification was that the **two clips on the controller top were 10 mm long**, their sides fit, and they should be **1 mm shorter**. This supersedes the earlier provisional suggestions to thin them or shorten them 2 mm. V24 trims their free ends to 9 mm without scaling or reducing their side widths/thicknesses. Only the new 9 mm hook test is supplied; the earlier suggested length variants were not needed after this clarification.
