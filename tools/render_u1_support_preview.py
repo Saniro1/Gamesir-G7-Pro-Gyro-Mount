@@ -9,7 +9,7 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection,Line3DCollection
 
 parser=argparse.ArgumentParser()
 parser.add_argument('--workdir',type=Path,required=True)
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29],default=29)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30],default=30)
 args=parser.parse_args()
 repo=Path(__file__).resolve().parents[1]
 plates=json.loads((args.workdir/'assemble.json').read_text())['plates']

@@ -1,32 +1,34 @@
 # GameSir G7 Pro modular reversible gyro mount
 
-**V29 is current:** the slider pivots at its upper edge, bringing its bottom **5 mm closer to the controller** (11.17°). The rounded bridge and 9 mm clips remain. This release includes a **Snapmaker U1, 0.4 mm, open-top IEMAI matte PETG black 1.75 mm** starting setup with thin straight supports.
+**V30 is current:** easier-release PETG supports and smaller controller insertion clips. The **9 mm clip length stays unchanged**. Only the insertion cross-section is reduced: **0.5 mm from each opposing face**, from 3.5 × 2.5 mm to **2.5 × 1.5 mm**. The V29 slider tilt and rounded bridge remain.
 
-![V28 versus V29 slider tilt](docs/V29_slider_tilt.png)
+![Actual clip sections before and after](docs/V30_clip_clearance.png)
 
 ## Download and print
 
-- [Supported V29 PETG 3MF](slicer/Snapmaker_U1_IEMAI_Matte_PETG_Black_0.4_V29/G7_Modular_v29_U1_0.4_IEMAI_Matte_PETG_Black_Supported.3mf)
-- [Editable unsliced V29 PETG project](slicer/Snapmaker_U1_IEMAI_Matte_PETG_Black_0.4_V29/G7_Modular_v29_U1_0.4_IEMAI_Matte_PETG_Black.3mf)
-- [Revised bracket STL](printable/G7_Modular_v29_g7_mount.stl)
-- [Complete V29 ZIP](releases/G7_Pro_Modular_Reversible_Box2_V29_Complete.zip)
-- [Filament, support and printing instructions](slicer/Snapmaker_U1_IEMAI_Matte_PETG_Black_0.4_V29/README.md)
+- [Supported V30 PETG 3MF](slicer/Snapmaker_U1_IEMAI_Matte_PETG_Black_0.4_V30/G7_Modular_v30_U1_0.4_IEMAI_Matte_PETG_Black_Supported.3mf)
+- [Editable unsliced project](slicer/Snapmaker_U1_IEMAI_Matte_PETG_Black_0.4_V30/G7_Modular_v30_U1_0.4_IEMAI_Matte_PETG_Black.3mf)
+- [Revised bracket STL](printable/G7_Modular_v30_g7_mount.stl) and [short clip test STL](printable/G7_Modular_v30_hook_fit_coupon.stl)
+- [Complete V30 ZIP](releases/G7_Pro_Modular_Reversible_Box2_V30_Complete.zip)
+- [Print settings and support-removal instructions](slicer/Snapmaker_U1_IEMAI_Matte_PETG_Black_0.4_V30/README.md)
 
-Open the 3MF **as a project** in Snapmaker Orca 2.4.1 or newer. Check the U1/0.4 mm machine selection and PETG preset, then review Preview. The supported project includes actual sliced support toolpaths. Re-slice after changing settings or deleting parts.
+Open the 3MF **as a project** in Snapmaker Orca 2.4.1 or newer. It is for a **Snapmaker U1, 0.4 mm nozzle, IEMAI matte PETG black 1.75 mm, top cover removed, textured PEI**. The supported project includes actual sliced toolpaths. Re-slice after changing settings or removing parts.
 
-Plate 1 has the hook test, receiver, male fit coupon and key. Plate 2 has the full bracket, Box 2, lid and key. If you already have Box 2, its lid and key, **only the bracket needs reprinting**: their shapes are unchanged. Select the bracket and re-slice to print it alone. The standalone receiver on plate 1 is a fit test, not an additional piece required by the integral bracket.
+**Print plate 1 first** to check the smaller clips, sliding fit and support removal. Plate 2 contains the bracket, Box 2, lid and key. Only the bracket needs reprinting if you are reusing the existing box/lid/key. To print the bracket alone, remove other objects and re-slice.
 
-## Geometry and verification
+## Changes and checks
 
-The complete receiver rotates rigidly around its upper face edge. Its lower face moves inward 5 mm; the main clip stays fixed. The supporting links curve into the new inclined receiver. The box and key follow the same tilt, preserving their mating geometry and both USB orientations. The upper slider edge keeps the previous 5 mm inset; the lower edge is now 10 mm inside that same main-base reference. See [V29 measurements](docs/V29_REVISION.md).
+The owner reported broken parts during support removal and excessive force inserting the clips. V30 keeps the clip length and center positions, reduces both cross-section dimensions, and joins the smaller tongues back to the retained roots. The receiver's lower edge remains tilted 5 mm inward from V28, with its upper edge fixed. Box, lid, key and mating profile shapes are unchanged.
 
-The exported models passed **99 CAD checks**, including the 5 mm movement, unchanged clips, both assemblies and full sliding insertion paths. Both saved PETG plates reopened and sliced without plate warnings; **92 project/slicing checks** passed. These checks do not establish physical shell clearance or strength. The photo shows the desired direction but provides no scale or full controller model. Test the unloaded bracket against the shell, buttons and cables before installing the device.
+Supports remain straight rectilinear normal/snug supports. V30 increases top/bottom separation from 0.32 to **0.48 mm**, increases XY clearance to **0.8 mm**, widens support lines from 3 to **4 mm spacing**, and removes dense top/bottom interfaces. The key uses the same easy-release separation. The overhang threshold is 45° and the brim gap increases to 0.3 mm. These choices reduce support contact and favor removal over underside finish. No tree branches are used.
 
-PETG settings are a conservative starting profile derived from the official Snapmaker Generic PETG preset, **not a manufacturer-validated IEMAI profile**. Confirm the temperatures against your spool label. No physical PETG print, flow calibration, latch fatigue or load test has been performed.
+**103 CAD checks and 99 project/slicing checks passed.** Both saved plates reopened and sliced in actual Snapmaker Orca with no plate-level warnings. These checks establish mesh dimensions, mating compatibility and saved settings, not physical fit, peel force or strength. Test the short clip first and do not force it into the controller. See [revision details](docs/V30_REVISION.md).
 
-## Files and rebuild
+PETG temperatures remain a conservative starting point: **245°C nozzle, 80°C first-layer bed then 75°C**, limited to 4 mm³/s. This is derived from Snapmaker Generic PETG, not a manufacturer-validated IEMAI preset. Check your spool label. Let parts cool and support the clip roots while removing support in small sections.
 
-Prior revisions, PLA projects and original V22 files are retained. [V28 instructions](docs/V28_README.md) describe the previous position. The original ZIP and all 13 extracted files remain under `originals/`. No license was supplied with the original files; this import does not grant a new license.
+## History and rebuild
+
+The [V29 instructions](docs/V29_README.md), all earlier CAD/STLs/projects and the original V22 ZIP/files remain available. No license was supplied with the original files; this import does not grant a new license.
 
 Requires OpenSCAD 2021.01 and Python 3.12:
 
@@ -34,11 +36,11 @@ Requires OpenSCAD 2021.01 and Python 3.12:
 python -m venv .venv
 .venv/bin/python -m pip install -r tools/requirements.txt
 source .venv/bin/activate
-./tools/build.sh 29
-.venv/bin/python tools/create_snapmaker_orca_project.py --design-version 29 \
+./tools/build.sh 30
+.venv/bin/python tools/create_snapmaker_orca_project.py --design-version 30 \
   --resources /path/to/SnapmakerOrca/resources \
-  --orca /path/to/snapmaker-orca --workdir /tmp/g7-u1-v29 --validate
-python tools/package_release.py --design-version 29
+  --orca /path/to/snapmaker-orca --workdir /tmp/g7-u1-v30 --validate
+python tools/package_release.py --design-version 30
 ```
 
-V29 exports bracket components through OpenSCAD, then joins them with manifold3d: CGAL in OpenSCAD 2021.01 fails to union the rotated imported receiver reliably. Use the build script for the finished bracket, rather than directly exporting the full mount from SCAD. Other parts export directly. The seven STLs, assembly views, validation reports, profile JSONs and reproducible tools are included in the ZIP.
+Use the build script for the finished mount. It exports OpenSCAD components then joins them with manifold3d to avoid the CGAL failure with the rotated imported receiver. The V30 hook uses the frozen V29 hook as its base; all dependencies are in the ZIP. Validation reports include final STL and 3MF hashes.

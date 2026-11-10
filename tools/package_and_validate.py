@@ -15,10 +15,10 @@ import trimesh
 from design_frames import dock_tilt,transform_points
 
 parser=argparse.ArgumentParser()
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29],default=29)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30],default=30)
 args=parser.parse_args()
 VERSION=args.design_version
-SHIFT=np.array([0.,-30. if VERSION>=27 else -40.,{24:8.,25:3.,26:-7.0285,27:-7.0285,28:-7.0285,29:-7.0285}[VERSION]]) if VERSION>=24 else np.zeros(3)
+SHIFT=np.array([0.,-30. if VERSION>=27 else -40.,{24:8.,25:3.,26:-7.0285,27:-7.0285,28:-7.0285,29:-7.0285,30:-7.0285}[VERSION]]) if VERSION>=24 else np.zeros(3)
 ROOT = Path(__file__).resolve().parents[1]
 REPORT=ROOT/'docs'/('validation.json' if VERSION==23 else f'validation_v{VERSION}.json')
 REPORT.unlink(missing_ok=True)
@@ -162,7 +162,7 @@ else:
     region.apply_translation([11.5,-3.,1.55]) # Z=-6.9..10, Y=-10..4
     old_hook=common(old,region);new_hook=common(M['g7_mount'],region)
     delta=abs(old_hook.volume+new_hook.volume-2*common(old_hook,new_hook).volume)
-    check('clip sides and thickness preserved above shortened tips',delta<.01,symmetric_difference_mm3=float(delta))
+    if VERSION<30:check('clip sides and thickness preserved above shortened tips',delta<.01,symmetric_difference_mm3=float(delta))
     for x in [2.5,20.5]:
         probe=trimesh.creation.box(extents=[.1,6,11.1])
         probe.apply_translation([x,-1.8,-3.45]) # Z=-9..2.1, includes the clip only
@@ -189,13 +189,23 @@ else:
     if VERSION==28:
         previous=trimesh.load_mesh(ROOT/'printable'/'G7_Modular_v27_g7_mount.stl')
         check('V27 dock end and base depth retained',np.allclose(M['g7_mount'].bounds[1,1:],previous.bounds[1,1:],atol=.001),current_max_yz_mm=M['g7_mount'].bounds[1,1:].tolist(),previous_max_yz_mm=previous.bounds[1,1:].tolist())
-    if VERSION==29:
+    if VERSION>=29:
         targets=np.array([[1.25,18.8,21.5215],[1.25,44.6,21.5215]])
         expected=transform_points(targets,TILT)
         actual=np.array([M['g7_mount'].vertices[np.linalg.norm(M['g7_mount'].vertices-p,axis=1).argmin()] for p in expected])
         check('tilt endpoints present in exported mount',np.max(np.linalg.norm(actual-expected,axis=1))<.001,actual_mm=actual.tolist())
         check('slider upper edge stays fixed',np.linalg.norm(actual[0]-targets[0])<.001,change_mm=float(np.linalg.norm(actual[0]-targets[0])))
         check('slider lower edge 5 mm inward',abs(targets[1,2]-actual[1,2]-5)<.001,inward_mm=float(targets[1,2]-actual[1,2]),angle_degrees=float(np.degrees(np.arcsin(5/25.8))))
+    if VERSION>=30:
+        previous=trimesh.load_mesh(ROOT/'printable/G7_Modular_v29_g7_mount.stl')
+        keep=trimesh.creation.box(extents=[40,100,50]);keep.apply_translation([11.5,-52,5]) # Y <= -2
+        a,b=common(previous,keep),common(M['g7_mount'],keep)
+        check('controller clip roots retained',abs(a.volume+b.volume-2*common(a,b).volume)<.01)
+        for x in [.25,19.25]:
+            region=trimesh.creation.box(extents=[4,2.01,9.1]);region.apply_translation([x+1.75,.205,-2.4]) # Y=-.8..1.21
+            tab=common(M['g7_mount'],region)
+            check(f'clip {x}: 0.5 mm off each cross-section face',np.allclose(tab.bounds,[[x+.5,-.8,-6.9],[x+3,.7,2.1]],atol=.001),bounds_mm=tab.bounds.tolist())
+            check(f'clip {x}: insertion length remains 9 mm',abs(tab.extents[2]-9)<.001,length_mm=float(tab.extents[2]))
     if VERSION==25:
         previous=trimesh.load_mesh(ROOT/'printable'/'G7_Modular_v24_g7_mount.stl')
         old_coupon=trimesh.load_mesh(ROOT/'printable'/'G7_Modular_v24_hook_fit_coupon.stl')

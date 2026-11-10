@@ -1,0 +1,667 @@
+{
+  "status": "CAD checks passed; physical hardware fit unverified",
+  "software": {
+    "trimesh": "5.2.0",
+    "numpy": "2.5.4"
+  },
+  "mesh_sha256": {
+    "g7_mount": "2cbf88a35fc4dfd2a4e9edde669e7d4eed6a471afcc6ce350b754fd09dcedfde",
+    "box": "6fa840863341cdf253266c3cba5b0cc9d5b85318c128249b312a82aad6e009d8",
+    "lid": "8ec346d1be40b9807ccd30769a7473766b4bc84c415114e0f420265ae138376b",
+    "lock_key": "e30082cef00444af6c1ccf1e91a3e6ecbe5fc7dbfb403c79190c2a860fcce104",
+    "universal_receiver": "6181baaad8721ef25ed03f01ee0d6c43c9ab5b224b8f3be38e957acd152be72d",
+    "male_fit_coupon": "3c1df576dd990232ce5f2e380e9e44b5ac5e4bcd59c6b7f338239f0464dd5490",
+    "hook_fit_coupon": "9bdf4d5178368426d7c53f573f398f15b28433c65923d83118f105712817952a"
+  },
+  "check_count": 103,
+  "checks": [
+    {
+      "name": "g7_mount: closed connected positive solid",
+      "passed": true,
+      "volume_mm3": 4789.57635688893,
+      "bounds_mm": [
+        [
+          0.1767873764038086,
+          -6.17999267578125,
+          -6.899999618530273
+        ],
+        [
+          22.823200225830078,
+          44.11086654663086,
+          26.521499633789062
+        ]
+      ],
+      "triangles": 4186
+    },
+    {
+      "name": "box: closed connected positive solid",
+      "passed": true,
+      "volume_mm3": 8705.171085853195,
+      "bounds_mm": [
+        [
+          -14.850000381469727,
+          -17.5,
+          -3.450000047683716
+        ],
+        [
+          12.850000381469727,
+          12.0,
+          23.5
+        ]
+      ],
+      "triangles": 176
+    },
+    {
+      "name": "lid: closed connected positive solid",
+      "passed": true,
+      "volume_mm3": 1709.0457817573404,
+      "bounds_mm": [
+        [
+          -15.550000190734863,
+          -19.700000762939453,
+          21.100000381469727
+        ],
+        [
+          13.550000190734863,
+          12.100000381469727,
+          25.649999618530273
+        ]
+      ],
+      "triangles": 132
+    },
+    {
+      "name": "lock_key: closed connected positive solid",
+      "passed": true,
+      "volume_mm3": 81.18518460841601,
+      "bounds_mm": [
+        [
+          -10.949999809265137,
+          10.050000190734863,
+          2.3299999237060547
+        ],
+        [
+          15.399999618530273,
+          13.75,
+          4.599999904632568
+        ]
+      ],
+      "triangles": 76
+    },
+    {
+      "name": "universal_receiver: closed connected positive solid",
+      "passed": true,
+      "volume_mm3": 1708.902615641707,
+      "bounds_mm": [
+        [
+          -10.25,
+          -12.600000381469727,
+          -1.9073499402111338e-07
+        ],
+        [
+          10.25,
+          13.199999809265137,
+          4.849999904632568
+        ]
+      ],
+      "triangles": 144
+    },
+    {
+      "name": "male_fit_coupon: closed connected positive solid",
+      "passed": true,
+      "volume_mm3": 1136.8961363296737,
+      "bounds_mm": [
+        [
+          -11.0,
+          -16.0,
+          -3.450000047683716
+        ],
+        [
+          9.0,
+          10.0,
+          0.0
+        ]
+      ],
+      "triangles": 36
+    },
+    {
+      "name": "hook_fit_coupon: closed connected positive solid",
+      "passed": true,
+      "volume_mm3": 2189.6040897466396,
+      "bounds_mm": [
+        [
+          0.1767873764038086,
+          -6.17999267578125,
+          -6.899999618530273
+        ],
+        [
+          22.823200225830078,
+          8.599990844726562,
+          26.521499633789062
+        ]
+      ],
+      "triangles": 2562
+    },
+    {
+      "name": "USB_down: g7_mount/box assembled clearance",
+      "passed": true,
+      "overlap_mm3": 0.0
+    },
+    {
+      "name": "USB_down: g7_mount/lid assembled clearance",
+      "passed": true,
+      "overlap_mm3": 0.0
+    },
+    {
+      "name": "USB_down: g7_mount/lock_key assembled clearance",
+      "passed": true,
+      "overlap_mm3": 0.0
+    },
+    {
+      "name": "USB_down: box/lid assembled clearance",
+      "passed": true,
+      "overlap_mm3": 0.0
+    },
+    {
+      "name": "USB_down: box/lock_key assembled clearance",
+      "passed": true,
+      "overlap_mm3": 0.0
+    },
+    {
+      "name": "USB_down: lid/lock_key assembled clearance",
+      "passed": true,
+      "overlap_mm3": 0.0
+    },
+    {
+      "name": "USB_down: box insertion path",
+      "passed": true,
+      "samples": 161,
+      "max_overlap_mm3": 0.0
+    },
+    {
+      "name": "USB_down: lid insertion path",
+      "passed": true,
+      "samples": 161,
+      "max_overlap_mm3": 0.0
+    },
+    {
+      "name": "USB_down: key blocks withdrawal",
+      "passed": true,
+      "overlap_mm3": 0.8495699389158512
+    },
+    {
+      "name": "USB_down: approach to closed stop",
+      "passed": true,
+      "overlap_mm3": 0.0
+    },
+    {
+      "name": "USB_down: stop takes contact",
+      "passed": true,
+      "overlap_mm3": 2.8651232857636217,
+      "bounds_mm": [
+        [
+          4.399999618530273,
+          21.299998128310826,
+          19.3215003377913
+        ],
+        [
+          18.600000381469727,
+          21.400001650407255,
+          21.521500236611573
+        ]
+      ]
+    },
+    {
+      "name": "USB_up: g7_mount/box assembled clearance",
+      "passed": true,
+      "overlap_mm3": 0.0
+    },
+    {
+      "name": "USB_up: g7_mount/lid assembled clearance",
+      "passed": true,
+      "overlap_mm3": 0.0
+    },
+    {
+      "name": "USB_up: g7_mount/lock_key assembled clearance",
+      "passed": true,
+      "overlap_mm3": 0.0
+    },
+    {
+      "name": "USB_up: box/lid assembled clearance",
+      "passed": true,
+      "overlap_mm3": 0.0
+    },
+    {
+      "name": "USB_up: box/lock_key assembled clearance",
+      "passed": true,
+      "overlap_mm3": 0.0
+    },
+    {
+      "name": "USB_up: lid/lock_key assembled clearance",
+      "passed": true,
+      "overlap_mm3": 0.0
+    },
+    {
+      "name": "USB_up: box insertion path",
+      "passed": true,
+      "samples": 161,
+      "max_overlap_mm3": 0.0
+    },
+    {
+      "name": "USB_up: lid insertion path",
+      "passed": true,
+      "samples": 161,
+      "max_overlap_mm3": 0.0
+    },
+    {
+      "name": "USB_up: key blocks withdrawal",
+      "passed": true,
+      "overlap_mm3": 0.8495699279483251
+    },
+    {
+      "name": "USB_up: approach to closed stop",
+      "passed": true,
+      "overlap_mm3": 0.0
+    },
+    {
+      "name": "USB_up: stop takes contact",
+      "passed": true,
+      "overlap_mm3": 2.8651232372172477,
+      "bounds_mm": [
+        [
+          4.400000095367432,
+          21.299998128310826,
+          19.3215003377913
+        ],
+        [
+          18.600000381469727,
+          21.400001650407255,
+          21.521500236611573
+        ]
+      ]
+    },
+    {
+      "name": "portable receiver matches integrated receiver",
+      "passed": true,
+      "symmetric_difference_mm3": 9.925617807651776e-05
+    },
+    {
+      "name": "key slot roof is 0.57 mm thick",
+      "passed": true,
+      "measured_thickness_mm": 0.5699996948242188
+    },
+    {
+      "name": "key slot retains 2.08 mm floor",
+      "passed": true,
+      "measured_thickness_mm": 2.0800018310546875
+    },
+    {
+      "name": "key insertion interference confined to flex bump",
+      "passed": true,
+      "max_overlap_mm3": 0.1350345286109622,
+      "required_tip_deflection_mm": 0.27,
+      "designed_under_tongue_gap_mm": 0.4
+    },
+    {
+      "name": "lid can clear box after sliding toward negative local Y",
+      "passed": true,
+      "max_intentional_detent_overlap_mm3": 0.07431152548109798,
+      "samples": 141
+    },
+    {
+      "name": "box: supplied geometry preserved",
+      "passed": true,
+      "symmetric_difference_mm3": 0.00015615639495081268
+    },
+    {
+      "name": "lid: supplied geometry preserved",
+      "passed": true,
+      "symmetric_difference_mm3": 0.00021824266059411457
+    },
+    {
+      "name": "clip at X=2.5: 10 mm to 9 mm",
+      "passed": true,
+      "old_length_mm": 10.0,
+      "new_length_mm": 8.999999523162842
+    },
+    {
+      "name": "clip at X=20.5: 10 mm to 9 mm",
+      "passed": true,
+      "old_length_mm": 10.0,
+      "new_length_mm": 8.999999523162842
+    },
+    {
+      "name": "receiver exactly 30 mm higher than V23",
+      "passed": true,
+      "previous_open_end_y_mm": 74.6,
+      "new_open_end_y_mm": 44.60000158584141
+    },
+    {
+      "name": "receiver upper edge 5 mm inside main base",
+      "passed": true,
+      "base_outer_z_mm": 26.521499633789062,
+      "receiver_outer_z_mm": 21.521499904632567,
+      "inset_mm": 4.999999729156496
+    },
+    {
+      "name": "main base depth unchanged from V25",
+      "passed": true,
+      "change_mm": -3.662109371305178e-07
+    },
+    {
+      "name": "receiver 10 mm lower than V26",
+      "passed": true,
+      "lowering_mm": 10.00000158584141
+    },
+    {
+      "name": "upper bridge clearance USB up=False",
+      "passed": true,
+      "clearance_mm": 8.188271900013383
+    },
+    {
+      "name": "upper bridge clearance USB up=True",
+      "passed": true,
+      "clearance_mm": 8.090167763457988
+    },
+    {
+      "name": "tilt endpoints present in exported mount",
+      "passed": true,
+      "actual_mm": [
+        [
+          1.25,
+          18.799999237060547,
+          21.521499633789062
+        ],
+        [
+          1.25,
+          44.11086654663086,
+          16.521499633789062
+        ]
+      ]
+    },
+    {
+      "name": "slider upper edge stays fixed",
+      "passed": true,
+      "change_mm": 8.462783588707018e-07
+    },
+    {
+      "name": "slider lower edge 5 mm inward",
+      "passed": true,
+      "inward_mm": 5.000000366210937,
+      "angle_degrees": 11.174540911036644
+    },
+    {
+      "name": "controller clip roots retained",
+      "passed": true
+    },
+    {
+      "name": "clip 0.25: 0.5 mm off each cross-section face",
+      "passed": true,
+      "bounds_mm": [
+        [
+          0.7499990463256836,
+          -0.800000011920929,
+          -6.899999618530273
+        ],
+        [
+          3.25,
+          0.6999998688697815,
+          2.09999942779541
+        ]
+      ]
+    },
+    {
+      "name": "clip 0.25: insertion length remains 9 mm",
+      "passed": true,
+      "length_mm": 8.999999046325684
+    },
+    {
+      "name": "clip 19.25: 0.5 mm off each cross-section face",
+      "passed": true,
+      "bounds_mm": [
+        [
+          19.75,
+          -0.800000011920929,
+          -6.899999618530273
+        ],
+        [
+          22.25,
+          0.6999998688697815,
+          2.09999942779541
+        ]
+      ]
+    },
+    {
+      "name": "clip 19.25: insertion length remains 9 mm",
+      "passed": true,
+      "length_mm": 8.999999046325684
+    },
+    {
+      "name": "box: V23 interface geometry retained",
+      "passed": true,
+      "symmetric_difference_mm3": 0.00015615639495081268
+    },
+    {
+      "name": "lid: V23 interface geometry retained",
+      "passed": true,
+      "symmetric_difference_mm3": 0.00021824266059411457
+    },
+    {
+      "name": "lock_key: V23 interface geometry retained",
+      "passed": true,
+      "symmetric_difference_mm3": 8.724917364588691e-06
+    },
+    {
+      "name": "male_fit_coupon: V23 interface geometry retained",
+      "passed": true,
+      "symmetric_difference_mm3": 2.292967428729753e-05
+    },
+    {
+      "name": "universal_receiver: V23 interface geometry retained",
+      "passed": true,
+      "symmetric_difference_mm3": 7.546073447883828e-06
+    },
+    {
+      "name": "G7_Modular_v30_Assembly_USB_Down.3mf: object count",
+      "passed": true
+    },
+    {
+      "name": "G7_Modular_v30_Assembly_USB_Down.3mf: g7_mount mesh round trip",
+      "passed": true
+    },
+    {
+      "name": "G7_Modular_v30_Assembly_USB_Down.3mf: box mesh round trip",
+      "passed": true
+    },
+    {
+      "name": "G7_Modular_v30_Assembly_USB_Down.3mf: lid mesh round trip",
+      "passed": true
+    },
+    {
+      "name": "G7_Modular_v30_Assembly_USB_Down.3mf: lock_key mesh round trip",
+      "passed": true
+    },
+    {
+      "name": "G7_Modular_v30_Assembly_USB_Up.3mf: object count",
+      "passed": true
+    },
+    {
+      "name": "G7_Modular_v30_Assembly_USB_Up.3mf: g7_mount mesh round trip",
+      "passed": true
+    },
+    {
+      "name": "G7_Modular_v30_Assembly_USB_Up.3mf: box mesh round trip",
+      "passed": true
+    },
+    {
+      "name": "G7_Modular_v30_Assembly_USB_Up.3mf: lid mesh round trip",
+      "passed": true
+    },
+    {
+      "name": "G7_Modular_v30_Assembly_USB_Up.3mf: lock_key mesh round trip",
+      "passed": true
+    },
+    {
+      "name": "print layout: g7_mount/box separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: g7_mount/lid separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: g7_mount/lock_key separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: g7_mount/universal_receiver separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: g7_mount/male_fit_coupon separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: g7_mount/hook_fit_coupon separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: box/lid separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: box/lock_key separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: box/universal_receiver separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: box/male_fit_coupon separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: box/hook_fit_coupon separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: lid/lock_key separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: lid/universal_receiver separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: lid/male_fit_coupon separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: lid/hook_fit_coupon separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: lock_key/universal_receiver separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: lock_key/male_fit_coupon separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: lock_key/hook_fit_coupon separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: universal_receiver/male_fit_coupon separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: universal_receiver/hook_fit_coupon separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: male_fit_coupon/hook_fit_coupon separated",
+      "passed": true
+    },
+    {
+      "name": "print layout: g7_mount on bed",
+      "passed": true
+    },
+    {
+      "name": "print layout: box on bed",
+      "passed": true
+    },
+    {
+      "name": "print layout: lid on bed",
+      "passed": true
+    },
+    {
+      "name": "print layout: lock_key on bed",
+      "passed": true
+    },
+    {
+      "name": "print layout: universal_receiver on bed",
+      "passed": true
+    },
+    {
+      "name": "print layout: male_fit_coupon on bed",
+      "passed": true
+    },
+    {
+      "name": "print layout: hook_fit_coupon on bed",
+      "passed": true
+    },
+    {
+      "name": "G7_Modular_v30_Separated_7_Parts.3mf: object count",
+      "passed": true
+    },
+    {
+      "name": "G7_Modular_v30_Separated_7_Parts.3mf: g7_mount mesh round trip",
+      "passed": true
+    },
+    {
+      "name": "G7_Modular_v30_Separated_7_Parts.3mf: box mesh round trip",
+      "passed": true
+    },
+    {
+      "name": "G7_Modular_v30_Separated_7_Parts.3mf: lid mesh round trip",
+      "passed": true
+    },
+    {
+      "name": "G7_Modular_v30_Separated_7_Parts.3mf: lock_key mesh round trip",
+      "passed": true
+    },
+    {
+      "name": "G7_Modular_v30_Separated_7_Parts.3mf: universal_receiver mesh round trip",
+      "passed": true
+    },
+    {
+      "name": "G7_Modular_v30_Separated_7_Parts.3mf: male_fit_coupon mesh round trip",
+      "passed": true
+    },
+    {
+      "name": "G7_Modular_v30_Separated_7_Parts.3mf: hook_fit_coupon mesh round trip",
+      "passed": true
+    }
+  ],
+  "unverified": [
+    "G7 Pro shape and hook grip",
+    "Controller installation path",
+    "Rear button, trigger, USB and charging dock clearance",
+    "Contents of Box 2 and cable plug clearance",
+    "Printer tolerances, latch flexibility, fatigue and load strength"
+  ],
+  "print_layout_bounds_mm": [
+    [
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      240.94282627105713,
+      50.29085922241211,
+      33.421499252319336
+    ]
+  ]
+}

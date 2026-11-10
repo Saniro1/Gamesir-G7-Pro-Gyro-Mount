@@ -11,7 +11,7 @@ parser=argparse.ArgumentParser(description='Create and optionally slice a U1 mat
 parser.add_argument('--resources',type=Path,required=True,help='Snapmaker Orca resources directory')
 parser.add_argument('--orca',required=True,help='Snapmaker Orca executable or runtime wrapper')
 parser.add_argument('--workdir',type=Path,required=True,help='Writable scratch directory for oriented meshes and logs')
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29],default=29)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30],default=30)
 parser.add_argument('--validate',action='store_true',help='Reopen and slice both plates, retaining results in workdir')
 args=parser.parse_args()
 VERSION=args.design_version
@@ -68,8 +68,8 @@ if VERSION>=29:
   fan_min_speed=['20'],fan_max_speed=['40'],close_fan_the_first_x_layers=['3'],
   overhang_fan_speed=['60'],support_material_interface_fan_speed=['40'],
   during_print_exhaust_fan_speed=['0'],complete_print_exhaust_fan_speed=['0'])
- process.update(name='G7 V29 - matte PETG open-top U1 - 0.16mm',
-  print_settings_id='G7 V29 - matte PETG open-top U1 - 0.16mm',
+ process.update(name=f'G7 V{VERSION} - matte PETG open-top U1 - 0.16mm',
+  print_settings_id=f'G7 V{VERSION} - matte PETG open-top U1 - 0.16mm',
   outer_wall_speed=['30','30'],inner_wall_speed=['45','45'],
   sparse_infill_speed=['55','55'],internal_solid_infill_speed=['45','45'],
   top_surface_speed=['30','30'],gap_infill_speed='30',
@@ -78,6 +78,12 @@ if VERSION>=29:
   support_speed=['35','35'],support_interface_speed=['25','25'],
   support_object_xy_distance='0.5',support_interface_spacing='0.5')
 
+if VERSION>=30:
+ process.update(support_threshold_angle='45',support_top_z_distance='0.48',
+  support_bottom_z_distance='0.48',support_interface_top_layers='0',
+  support_interface_bottom_layers='0',support_object_xy_distance='0.8',
+  support_base_pattern_spacing='4.0',
+  brim_object_gap='0.3')
 # CLI needs speed/acceleration vectors explicitly; the GUI normally migrates
 # legacy scalar speed entries while reading system profiles.
 for k in ['gap_infill_speed','overhang_totally_speed','initial_layer_acceleration','ironing_speed',
@@ -109,6 +115,7 @@ for name,parts in [('01 - Fit tests first',['hook_fit_coupon','universal_receive
    params['brim_type']='no_brim'
   if part=='lock_key':params.update(sparse_infill_density='100%',outer_wall_speed='25,25',inner_wall_speed='30,30',support_type='normal(auto)',support_style='snug',support_interface_top_layers='1',support_interface_spacing='0.40',support_base_pattern_spacing='3.0',support_top_z_distance='0.20')
   if VERSION>=29 and part=='lock_key':params.update(support_interface_spacing='0.5',support_top_z_distance='0.24')
+  if VERSION>=30 and part=='lock_key':params.update(support_interface_top_layers='0',support_top_z_distance='0.48',support_base_pattern_spacing='4.0')
   objs.append(dict(path=str(path),count=1,filaments=[1],pos_x=[45+50*len(objs)],pos_y=[100],pos_z=[0],print_params=params))
  plates.append(dict(plate_name=name,need_arrange=False,objects=objs))
 (w/'assemble.json').write_text(json.dumps(dict(plates=plates),indent=2)+'\n')
