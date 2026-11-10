@@ -1,3 +1,5 @@
+> V27 history. [V28](V28_REVISION.md) retains the same docking position with a more rounded, continuous curve.
+
 # V27: lower box and more generous curve
 
 The owner asked for the curve again and suggested lowering the box about 10 mm to leave slack for installation. V27 moves the **receiver, box, lid and key down 10 mm** from V26 and makes the curved transition longer and more gradual. It retains the **9 mm clips** and **5 mm inset of the receiver face relative to the main base**.

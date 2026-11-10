@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
-version="${1:-27}"
-case "$version" in 23|24|25|26|27) ;; *) exit 2 ;; esac
+version="${1:-28}"
+case "$version" in 23|24|25|26|27|28) ;; *) exit 2 ;; esac
 mkdir -p printable
 # Invalidate stale success evidence before replacing exported geometry.
 if [[ "$version" == 23 ]]; then rm -f docs/validation.json; else rm -f "docs/validation_v${version}.json"; fi

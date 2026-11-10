@@ -1,3 +1,5 @@
+> V27 archive. [V28](../Snapmaker_U1_PLA_Black_0.4_V28/README.md) keeps its box position and clearances but rounds the transition.
+
 # V27 · Snapmaker U1 · 0.4 mm · Snapmaker PLA Basic Black
 
 Open **G7_Modular_v27_U1_0.4_Snapmaker_PLA_Black_Supported.3mf** as a project in Snapmaker Orca 2.4.1 or newer. It contains the **box lowered 10 mm from V26 with a longer curve**, the retained **5 mm receiver-face inset** and **9 mm clips**, and **thin straight supports with no branches**, plus the actual sliced toolpaths. Open Preview before printing. The companion file without `_Supported` is editable and unsliced. Re-slice after any change.
