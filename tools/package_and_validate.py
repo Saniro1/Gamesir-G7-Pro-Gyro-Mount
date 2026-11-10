@@ -1,4 +1,4 @@
-"""Build portable multi-object 3MFs and check actual exported V23/V24/V25/V26 meshes.
+"""Build portable multi-object 3MFs and check actual exported V23/V24/V25/V26/V27 meshes.
 
 Run after tools/build.sh's OpenSCAD exports. No controller/device model exists;
 these tests assess printed-part geometry only, not hardware fit or strength.
@@ -14,10 +14,10 @@ import numpy as np
 import trimesh
 
 parser=argparse.ArgumentParser()
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26],default=26)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27],default=27)
 args=parser.parse_args()
 VERSION=args.design_version
-SHIFT=np.array([0.,-40.,{24:8.,25:3.,26:-7.0285}[VERSION]]) if VERSION>=24 else np.zeros(3)
+SHIFT=np.array([0.,-30. if VERSION==27 else -40.,{24:8.,25:3.,26:-7.0285,27:-7.0285}[VERSION]]) if VERSION>=24 else np.zeros(3)
 ROOT = Path(__file__).resolve().parents[1]
 REPORT=ROOT/'docs'/('validation.json' if VERSION==23 else f'validation_v{VERSION}.json')
 REPORT.unlink(missing_ok=True)
@@ -159,7 +159,7 @@ else:
         before=common(old,probe);after=common(M['g7_mount'],probe)
         check(f'clip at X={x}: 10 mm to 9 mm',abs(before.extents[2]-10)<.001 and abs(after.extents[2]-9)<.001,
               old_length_mm=float(before.extents[2]),new_length_mm=float(after.extents[2]))
-    check('receiver exactly 40 mm higher',abs(M['g7_mount'].bounds[1,1]-(old.bounds[1,1]-40))<1e-4,
+    check(f'receiver exactly {int(-SHIFT[1])} mm higher than V23',abs(M['g7_mount'].bounds[1,1]-(old.bounds[1,1]+SHIFT[1]))<1e-4,
           previous_open_end_y_mm=float(old.bounds[1,1]),new_open_end_y_mm=float(M['g7_mount'].bounds[1,1]))
     if VERSION<=25:
         check('raised module male head clears retained upper bend',assembly()['box'].bounds[0,2]-M['hook_fit_coupon'].bounds[1,2]>2,
@@ -170,6 +170,12 @@ else:
         receiver_outer=M['universal_receiver'].bounds[1,2]+23.7+SHIFT[2]
         check('receiver face 5 mm inside main base',abs(base_outer-receiver_outer-5)<.001,base_outer_z_mm=float(base_outer),receiver_outer_z_mm=float(receiver_outer),inset_mm=float(base_outer-receiver_outer))
         check('main base depth unchanged from V25',abs(base_outer-previous_hook.bounds[1,2])<.001,change_mm=float(base_outer-previous_hook.bounds[1,2]))
+    if VERSION==27:
+        previous=trimesh.load_mesh(ROOT/'printable'/'G7_Modular_v26_g7_mount.stl')
+        check('receiver 10 mm lower than V26',abs(M['g7_mount'].bounds[1,1]-previous.bounds[1,1]-10)<.001,lowering_mm=float(M['g7_mount'].bounds[1,1]-previous.bounds[1,1]))
+        for up in [False,True]:
+            gap=assembly(up)['box'].bounds[0,1]-M['hook_fit_coupon'].bounds[1,1]
+            check(f'upper bridge clearance USB up={up}',gap>=7.99,clearance_mm=float(gap))
     if VERSION==25:
         previous=trimesh.load_mesh(ROOT/'printable'/'G7_Modular_v24_g7_mount.stl')
         old_coupon=trimesh.load_mesh(ROOT/'printable'/'G7_Modular_v24_hook_fit_coupon.stl')

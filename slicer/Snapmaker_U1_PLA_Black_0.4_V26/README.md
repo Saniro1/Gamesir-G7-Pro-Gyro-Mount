@@ -1,3 +1,5 @@
+> V26 archive. [V27](../Snapmaker_U1_PLA_Black_0.4_V27/README.md) lowers the box 10 mm and provides a longer curve with more insertion room.
+
 # V26 · Snapmaker U1 · 0.4 mm · Snapmaker PLA Basic Black
 
 Open **G7_Modular_v26_U1_0.4_Snapmaker_PLA_Black_Supported.3mf** as a project in Snapmaker Orca 2.4.1 or newer. It contains the **receiver face inset 5 mm inward of the main-base face**, the retained **9 mm clips** and **40 mm raised height**, and **thin straight supports with no branches**, plus the actual sliced toolpaths. Open Preview before printing. The companion file without `_Supported` is editable and unsliced. Re-slice after any change.

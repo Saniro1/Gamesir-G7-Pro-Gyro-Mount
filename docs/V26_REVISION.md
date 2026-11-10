@@ -1,3 +1,5 @@
+> V26 history. [V27](V27_REVISION.md) retains the inset but lowers the module 10 mm and relaxes the curve for more fitting room.
+
 # V26: receiver inset relative to the main base
 
 The owner clarified that the part holding Box 2 should sit about 5 mm inside the main base, like the recessed arrangement on V23. V26 defines that dimension between **the main base's outward-most reference surface and the receiver's box-facing surface**. It preserves the main-base depth from V25, rather than moving the base and receiver together.
