@@ -7,11 +7,12 @@ existing checkout. See slicer/Snapmaker_U1_PLA_Black_0.4/README.md for details.
 from pathlib import Path
 import json,shutil,sys,numpy as np,trimesh
 import argparse,os,subprocess
+from peel_sheets import make_sheets,THICKNESS,TOP_GAP,BOTTOM_GAP,PITCH,PANEL,TEAR_GAP
 parser=argparse.ArgumentParser(description='Create and optionally slice a U1 material-specific project using Snapmaker Orca 2.4.1.')
 parser.add_argument('--resources',type=Path,required=True,help='Snapmaker Orca resources directory')
 parser.add_argument('--orca',required=True,help='Snapmaker Orca executable or runtime wrapper')
 parser.add_argument('--workdir',type=Path,required=True,help='Writable scratch directory for oriented meshes and logs')
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30],default=30)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31],default=31)
 parser.add_argument('--validate',action='store_true',help='Reopen and slice both plates, retaining results in workdir')
 args=parser.parse_args()
 VERSION=args.design_version
@@ -84,6 +85,8 @@ if VERSION>=30:
   support_interface_bottom_layers='0',support_object_xy_distance='0.8',
   support_base_pattern_spacing='4.0',
   brim_object_gap='0.3')
+if VERSION>=31:
+ process.update(enable_support='1',support_type='normal(manual)',brim_type='no_brim')
 # CLI needs speed/acceleration vectors explicitly; the GUI normally migrates
 # legacy scalar speed entries while reading system profiles.
 for k in ['gap_infill_speed','overhang_totally_speed','initial_layer_acceleration','ironing_speed',
@@ -97,6 +100,8 @@ for n,d in [('printer',machine),('process',process),('filament',filament)]:
  (o/(n+'.json')).write_text(json.dumps(d,indent=2)+'\n')
 print('filament settings', {k:filament.get(k) for k in ['nozzle_temperature','nozzle_temperature_initial_layer','textured_plate_temp','textured_plate_temp_initial_layer','filament_max_volumetric_speed','filament_type','filament_vendor']})
 plates=[]
+sheet_records={}
+if VERSION>=31:(o/'custom_supports').mkdir(exist_ok=True)
 for name,parts in [('01 - Fit tests first',['hook_fit_coupon','universal_receiver','male_fit_coupon','lock_key']),('02 - Complete mount',['g7_mount','box','lid','lock_key'])]:
  objs=[]
  for part in parts:
@@ -108,6 +113,12 @@ for name,parts in [('01 - Fit tests first',['hook_fit_coupon','universal_receive
   if part=='lock_key':m.apply_transform(trimesh.transformations.rotation_matrix(np.pi/2,[1,0,0]))
   if part=='lid':m.apply_transform(trimesh.transformations.rotation_matrix(np.pi,[1,0,0]))
   m.apply_translation([-m.bounds[0,0],-m.bounds[0,1],-m.bounds[0,2]])
+  if VERSION>=31:
+   support,records=make_sheets(m) if part not in ['lid','universal_receiver'] else (None,[])
+   sheet_records[part]=dict(sheets=records,count=len(records),source_geometry_version=30)
+   if support is not None:
+    support.export(o/'custom_supports'/f'{part}_peel_sheets.stl')
+    m=trimesh.util.concatenate([m,support])
   path=w/'models'/(part+'.stl');m.export(path)
   params={}
   if part in ['lid','universal_receiver']:
@@ -116,8 +127,11 @@ for name,parts in [('01 - Fit tests first',['hook_fit_coupon','universal_receive
   if part=='lock_key':params.update(sparse_infill_density='100%',outer_wall_speed='25,25',inner_wall_speed='30,30',support_type='normal(auto)',support_style='snug',support_interface_top_layers='1',support_interface_spacing='0.40',support_base_pattern_spacing='3.0',support_top_z_distance='0.20')
   if VERSION>=29 and part=='lock_key':params.update(support_interface_spacing='0.5',support_top_z_distance='0.24')
   if VERSION>=30 and part=='lock_key':params.update(support_interface_top_layers='0',support_top_z_distance='0.48',support_base_pattern_spacing='4.0')
+  if VERSION>=31:params.update(enable_support='1',support_type='normal(manual)',brim_type='no_brim')
   objs.append(dict(path=str(path),count=1,filaments=[1],pos_x=[45+50*len(objs)],pos_y=[100],pos_z=[0],print_params=params))
  plates.append(dict(plate_name=name,need_arrange=False,objects=objs))
+if VERSION>=31:
+ (o/'peel_sheets_manifest.json').write_text(json.dumps(dict(thickness_mm=THICKNESS,top_gap_mm=TOP_GAP,bottom_gap_mm=BOTTOM_GAP,pitch_mm=PITCH,max_panel_length_mm=PANEL,tear_channel_mm=TEAR_GAP,parts=sheet_records),indent=2)+'\n')
 (w/'assemble.json').write_text(json.dumps(dict(plates=plates),indent=2)+'\n')
 
 project=o/f'G7_Modular_v{VERSION}_U1_0.4_{"IEMAI_Matte_PETG" if VERSION>=29 else "Snapmaker_PLA"}_Black.3mf'

@@ -15,10 +15,10 @@ import trimesh
 from design_frames import dock_tilt,transform_points
 
 parser=argparse.ArgumentParser()
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30],default=30)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31],default=31)
 args=parser.parse_args()
 VERSION=args.design_version
-SHIFT=np.array([0.,-30. if VERSION>=27 else -40.,{24:8.,25:3.,26:-7.0285,27:-7.0285,28:-7.0285,29:-7.0285,30:-7.0285}[VERSION]]) if VERSION>=24 else np.zeros(3)
+SHIFT=np.array([0.,-30. if VERSION>=27 else -40.,{24:8.,25:3.,26:-7.0285,27:-7.0285,28:-7.0285,29:-7.0285,30:-7.0285,31:-7.0285}[VERSION]]) if VERSION>=24 else np.zeros(3)
 ROOT = Path(__file__).resolve().parents[1]
 REPORT=ROOT/'docs'/('validation.json' if VERSION==23 else f'validation_v{VERSION}.json')
 REPORT.unlink(missing_ok=True)
@@ -71,6 +71,11 @@ for p, mesh in M.items():
     check(f'{p}: closed connected positive solid', mesh.is_watertight and mesh.is_winding_consistent
           and len(mesh.split()) == 1 and mesh.volume > 0,
           volume_mm3=float(mesh.volume), bounds_mm=mesh.bounds.tolist(), triangles=len(mesh.faces))
+
+if VERSION>=31:
+    for part in PARTS:
+        check(f'{part}: V30 accessory geometry exactly retained',
+              (ROOT/'printable'/f'G7_Modular_v{VERSION}_{part}.stl').read_bytes()==(ROOT/'printable'/f'G7_Modular_v30_{part}.stl').read_bytes())
 
 for up in (False, True):
     pose = assembly(up)
