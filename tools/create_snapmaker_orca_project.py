@@ -14,11 +14,14 @@ parser.add_argument('--orca',required=True,help='Snapmaker Orca executable or ru
 parser.add_argument('--workdir',type=Path,required=True,help='Writable scratch directory for oriented meshes and logs')
 parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31,32],default=32)
 parser.add_argument('--validate',action='store_true',help='Reopen and slice both plates, retaining results in workdir')
+parser.add_argument('--material',choices=['auto','pla','petg'],default='auto')
 args=parser.parse_args()
 VERSION=args.design_version
+PETG=(args.material=='petg' or args.material=='auto' and VERSION>=29)
+MATERIAL='petg' if PETG else 'pla'
 repo=Path(__file__).resolve().parents[1]
 r=args.resources.resolve()/'profiles'/'Snapmaker'
-o=repo/'slicer'/('Snapmaker_U1_PLA_Black_0.4' if VERSION==23 else f'Snapmaker_U1_{"IEMAI_Matte_PETG" if VERSION>=29 else "PLA"}_Black_0.4_V{VERSION}')
+o=repo/'slicer'/('Snapmaker_U1_PLA_Black_0.4' if VERSION==23 else f'Snapmaker_U1_{"IEMAI_Matte_PETG" if PETG else "PLA"}_Black_0.4_V{VERSION}')
 w=args.workdir.resolve()
 o.mkdir(parents=True,exist_ok=True)
 (w/'models').mkdir(parents=True,exist_ok=True)
@@ -54,7 +57,7 @@ filament['filament_max_volumetric_speed']=['8']
 filament.update(name='Snapmaker PLA Basic Black @U1 - G7',filament_settings_id=['Snapmaker PLA Basic Black @U1 - G7'],default_filament_colour=['#000000'],filament_colour=['#000000'])
 # V29: conservative generic-derived IEMAI matte PETG starting profile.
 # Brand-specific tuning is unmeasured; no active chamber heat, top cover removed.
-if VERSION>=29:
+if PETG:
  filament=profile('filament','Generic PETG')
  filament.update(inherits='Generic PETG', **{'from':'User'})
  for k in ['setting_id','renamed_from','description']:filament.pop(k,None)
@@ -86,7 +89,7 @@ if VERSION>=30:
   support_base_pattern_spacing='4.0',
   brim_object_gap='0.3')
 if VERSION>=31:
- process.update(enable_support='1',support_type='normal(manual)',brim_type='no_brim')
+ process.update(enable_support='1',support_type='normal(manual)',brim_type='no_brim',support_interface_spacing='0.5')
 # CLI needs speed/acceleration vectors explicitly; the GUI normally migrates
 # legacy scalar speed entries while reading system profiles.
 for k in ['gap_infill_speed','overhang_totally_speed','initial_layer_acceleration','ironing_speed',
@@ -135,7 +138,7 @@ if VERSION>=31:
  (o/'peel_sheets_manifest.json').write_text(json.dumps(dict(thickness_mm=THICKNESS,top_gap_mm=TOP_GAP,bottom_gap_mm=BOTTOM_GAP,pitch_mm=PITCH,max_panel_length_mm=PANEL,tear_channel_mm=TEAR_GAP,parts=sheet_records),indent=2)+'\n')
 (w/'assemble.json').write_text(json.dumps(dict(plates=plates),indent=2)+'\n')
 
-project=o/f'G7_Modular_v{VERSION}_U1_0.4_{"IEMAI_Matte_PETG" if VERSION>=29 else "Snapmaker_PLA"}_Black.3mf'
+project=o/f'G7_Modular_v{VERSION}_U1_0.4_{"IEMAI_Matte_PETG" if PETG else "Snapmaker_PLA"}_Black.3mf'
 env=dict(os.environ,LC_ALL='C')
 command=[args.orca,'--debug','2','--outputdir',str(w/'export'),
          '--load-assemble-list',str(w/'assemble.json'),
@@ -156,5 +159,5 @@ if args.validate:
  assert result['return_code']==0 and len(result['sliced_plates'])==2
  assert all(not x['warning_message'] for x in result['sliced_plates']),result
  print('Both saved project plates reopened and sliced without plate warnings.')
- subprocess.run([sys.executable,str(repo/'tools'/'validate_snapmaker_orca_project.py'),'--slice-results',str(w/'validation'),'--design-version',str(VERSION)],check=True)
+ subprocess.run([sys.executable,str(repo/'tools'/'validate_snapmaker_orca_project.py'),'--slice-results',str(w/'validation'),'--design-version',str(VERSION),'--material',MATERIAL],check=True)
 print(project)

@@ -7,10 +7,13 @@ import argparse
 parser=argparse.ArgumentParser(description='Verify the saved U1 project and actual Snapmaker Orca slice results.')
 parser.add_argument('--slice-results',type=Path,required=True,help='Directory containing result.json, settings.json and plate_1/2.gcode')
 parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31,32],default=32)
+parser.add_argument('--material',choices=['auto','pla','petg'],default='auto')
 args=parser.parse_args()
 VERSION=args.design_version
-repo=Path(__file__).resolve().parents[1];folder=repo/'slicer'/('Snapmaker_U1_PLA_Black_0.4' if VERSION==23 else f'Snapmaker_U1_{"IEMAI_Matte_PETG" if VERSION>=29 else "PLA"}_Black_0.4_V{VERSION}')
-path=folder/f'G7_Modular_v{VERSION}_U1_0.4_{"IEMAI_Matte_PETG" if VERSION>=29 else "Snapmaker_PLA"}_Black.3mf'
+PETG=(args.material=='petg' or args.material=='auto' and VERSION>=29)
+MATERIAL='petg' if PETG else 'pla'
+repo=Path(__file__).resolve().parents[1];folder=repo/'slicer'/('Snapmaker_U1_PLA_Black_0.4' if VERSION==23 else f'Snapmaker_U1_{"IEMAI_Matte_PETG" if PETG else "PLA"}_Black_0.4_V{VERSION}')
+path=folder/f'G7_Modular_v{VERSION}_U1_0.4_{"IEMAI_Matte_PETG" if PETG else "Snapmaker_PLA"}_Black.3mf'
 NS='http://schemas.microsoft.com/3dmanufacturing/core/2015/02';P='http://schemas.microsoft.com/3dmanufacturing/production/2015/06'
 checks=[]
 def check(name,value,**kw):
@@ -24,15 +27,18 @@ with zipfile.ZipFile(path) as z:
  config=json.loads(z.read('Metadata/project_settings.config'))
  for key,value in dict(printer_model='Snapmaker U1',printer_settings_id='Snapmaker U1 (0.4 nozzle)',curr_bed_type='Textured PEI Plate',
                        layer_height='0.16',wall_loops='4',sparse_infill_density='25%',sparse_infill_pattern='gyroid',enable_prime_tower='0',support_on_build_plate_only='0',support_type=('normal(manual)' if VERSION>=31 else 'normal(auto)' if VERSION>=24 else 'tree(auto)'),support_style=('snug' if VERSION>=24 else 'tree_slim'),support_top_z_distance=('0.48' if VERSION>=30 else '0.32'),support_interface_top_layers=('0' if VERSION>=30 else '2'),support_interface_spacing=('0.5' if VERSION>=29 else '0.4'),tree_support_branch_diameter='2',tree_support_wall_count='1',
-                       filament_colour=['#000000'],filament_type=['PETG' if VERSION>=29 else 'PLA'],nozzle_temperature=['245' if VERSION>=29 else '220'],nozzle_temperature_initial_layer=['245' if VERSION>=29 else '220'],
-                       textured_plate_temp=['75' if VERSION>=29 else '65'],textured_plate_temp_initial_layer=['80' if VERSION>=29 else '65'],filament_max_volumetric_speed=['4' if VERSION>=29 else '8']).items():
+                       filament_colour=['#000000'],filament_type=['PETG' if PETG else 'PLA'],nozzle_temperature=['245' if PETG else '220'],nozzle_temperature_initial_layer=['245' if PETG else '220'],
+                       textured_plate_temp=['75' if PETG else '65'],textured_plate_temp_initial_layer=['80' if PETG else '65'],filament_max_volumetric_speed=['4' if PETG else '8']).items():
   check('Saved '+key,config.get(key)==value,actual=config.get(key))
  if VERSION>=30:
   for key,value in dict(support_bottom_z_distance='0.48',support_interface_bottom_layers='0',support_object_xy_distance='0.8',brim_object_gap='0.3',support_threshold_angle='45').items():
    check('Easy release '+key,config.get(key)==value,actual=config.get(key))
- if VERSION>=29:
+ if PETG:
   for key,value in dict(filament_diameter=['1.75'],activate_chamber_temp_control=['0'],additional_cooling_fan_speed=['0'],fan_min_speed=['20'],fan_max_speed=['40'],close_fan_the_first_x_layers=['3']).items():
    check('PETG open-top '+key,config.get(key)==value,actual=config.get(key))
+ if not PETG:
+  for key,value in dict(filament_vendor=['Snapmaker'],activate_chamber_temp_control=['0'],filament_diameter=['1.75'],fan_min_speed=['100'],fan_max_speed=['100'],close_fan_the_first_x_layers=['1']).items():
+   check('PLA material '+key,config.get(key)==value,actual=config.get(key))
  if VERSION>=24:
   check(('Manual mode; no auto support blocks' if VERSION>=31 else 'straight parallel support pattern, no branches'),config['support_type']==('normal(manual)' if VERSION>=31 else 'normal(auto)') and config['support_base_pattern']=='rectilinear' and config['support_base_pattern_spacing']==('4' if VERSION>=30 else '3'))
  if VERSION>=31:
@@ -120,7 +126,7 @@ for key in ['printer_model','printer_settings_id','curr_bed_type','filament_colo
 estimates=[]
 for i in [1,2]:
  g=(args.slice_results/f'plate_{i}.gcode').read_text()
- if VERSION>=29:
+ if PETG:
   check(f'plate {i} PETG heating commands',all(re.search(r'^'+command+r'\s+S'+str(temp)+r'\b',g,re.M) for command,temp in [('M190',80),('M140',75),('M109',245)]))
  if VERSION>=31:
   position=np.zeros(3);hits=[0]*len(sheet_toolpath_targets[i]);layer_z=0.
@@ -138,6 +144,8 @@ for i in [1,2]:
      if abs(mid[0]-record['x'])<.12 and b[0,1]-.05<mid[1]<b[1,1]+.05 and b[0,2]+.24<mid[2]<b[1,2]+.05:hits[j]+=1
    position=new
   check(f'plate {i}: actual single-bead peel-sheet toolpaths',all(n>0 for n in hits),sheet_count=len(hits),missing=[r for r,n in zip(sheet_toolpath_targets[i],hits) if not n])
+ if not PETG:
+  check(f'plate {i} PLA heating commands',all(re.search(r'^'+command+r'\s+S'+str(temp)+r'\b',g,re.M) for command,temp in [('M190',65),('M109',220)]))
  check(f'plate {i} G-code generated',len(g)>50000 and 'PRINT_START' in g and 'PRINT_END' in g and 'G1 X' in g)
  estimates.append(dict(plate=i,filament_g=re.search(r'; total filament used \[g\] = ([0-9.]+)',g).group(1),time=re.search(r'; estimated printing time \(normal mode\) = (.+)',g).group(1)))
 supported=path.with_name(path.stem+'_Supported.3mf')

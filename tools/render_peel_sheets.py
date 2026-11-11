@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from matplotlib.collections import LineCollection
 import argparse
-p=argparse.ArgumentParser();p.add_argument('--workdir',type=Path,required=True);p.add_argument('--design-version',type=int,choices=[31,32],default=32);args=p.parse_args()
-root=Path(__file__).resolve().parents[1];folder=root/f'slicer/Snapmaker_U1_IEMAI_Matte_PETG_Black_0.4_V{args.design_version}'
+p=argparse.ArgumentParser();p.add_argument('--workdir',type=Path,required=True);p.add_argument('--design-version',type=int,choices=[31,32],default=32);p.add_argument('--material',choices=['petg','pla'],default='petg');args=p.parse_args()
+root=Path(__file__).resolve().parents[1];folder=root/f'slicer/Snapmaker_U1_{"PLA" if args.material=="pla" else "IEMAI_Matte_PETG"}_Black_0.4_V{args.design_version}'
 fig=plt.figure(figsize=(13,7),facecolor='#f7f8fa')
 for i,part in enumerate(['g7_mount','box']):
  ax=fig.add_subplot(1,3,i+1,projection='3d')

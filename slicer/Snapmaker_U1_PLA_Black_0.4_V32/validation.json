@@ -1,0 +1,651 @@
+{
+  "supported_project": "G7_Modular_v32_U1_0.4_Snapmaker_PLA_Black_Supported.3mf",
+  "supported_sha256": "c78a72b215e6216bf33ab0c18797206e1ebbfc0c23d1b4a71598dbcd1879578b",
+  "project": "G7_Modular_v32_U1_0.4_Snapmaker_PLA_Black.3mf",
+  "sha256": "b62ac13619f3555b3841f3624e456a6f85fc5c307bf34f3996595b28f12cbb41",
+  "snapmaker_orca_release": "2.4.1",
+  "checks": [
+    {
+      "name": "ZIP integrity",
+      "passed": true
+    },
+    {
+      "name": "Saved printer_model",
+      "passed": true,
+      "actual": "Snapmaker U1"
+    },
+    {
+      "name": "Saved printer_settings_id",
+      "passed": true,
+      "actual": "Snapmaker U1 (0.4 nozzle)"
+    },
+    {
+      "name": "Saved curr_bed_type",
+      "passed": true,
+      "actual": "Textured PEI Plate"
+    },
+    {
+      "name": "Saved layer_height",
+      "passed": true,
+      "actual": "0.16"
+    },
+    {
+      "name": "Saved wall_loops",
+      "passed": true,
+      "actual": "4"
+    },
+    {
+      "name": "Saved sparse_infill_density",
+      "passed": true,
+      "actual": "25%"
+    },
+    {
+      "name": "Saved sparse_infill_pattern",
+      "passed": true,
+      "actual": "gyroid"
+    },
+    {
+      "name": "Saved enable_prime_tower",
+      "passed": true,
+      "actual": "0"
+    },
+    {
+      "name": "Saved support_on_build_plate_only",
+      "passed": true,
+      "actual": "0"
+    },
+    {
+      "name": "Saved support_type",
+      "passed": true,
+      "actual": "normal(manual)"
+    },
+    {
+      "name": "Saved support_style",
+      "passed": true,
+      "actual": "snug"
+    },
+    {
+      "name": "Saved support_top_z_distance",
+      "passed": true,
+      "actual": "0.48"
+    },
+    {
+      "name": "Saved support_interface_top_layers",
+      "passed": true,
+      "actual": "0"
+    },
+    {
+      "name": "Saved support_interface_spacing",
+      "passed": true,
+      "actual": "0.5"
+    },
+    {
+      "name": "Saved tree_support_branch_diameter",
+      "passed": true,
+      "actual": "2"
+    },
+    {
+      "name": "Saved tree_support_wall_count",
+      "passed": true,
+      "actual": "1"
+    },
+    {
+      "name": "Saved filament_colour",
+      "passed": true,
+      "actual": [
+        "#000000"
+      ]
+    },
+    {
+      "name": "Saved filament_type",
+      "passed": true,
+      "actual": [
+        "PLA"
+      ]
+    },
+    {
+      "name": "Saved nozzle_temperature",
+      "passed": true,
+      "actual": [
+        "220"
+      ]
+    },
+    {
+      "name": "Saved nozzle_temperature_initial_layer",
+      "passed": true,
+      "actual": [
+        "220"
+      ]
+    },
+    {
+      "name": "Saved textured_plate_temp",
+      "passed": true,
+      "actual": [
+        "65"
+      ]
+    },
+    {
+      "name": "Saved textured_plate_temp_initial_layer",
+      "passed": true,
+      "actual": [
+        "65"
+      ]
+    },
+    {
+      "name": "Saved filament_max_volumetric_speed",
+      "passed": true,
+      "actual": [
+        "8"
+      ]
+    },
+    {
+      "name": "Easy release support_bottom_z_distance",
+      "passed": true,
+      "actual": "0.48"
+    },
+    {
+      "name": "Easy release support_interface_bottom_layers",
+      "passed": true,
+      "actual": "0"
+    },
+    {
+      "name": "Easy release support_object_xy_distance",
+      "passed": true,
+      "actual": "0.8"
+    },
+    {
+      "name": "Easy release brim_object_gap",
+      "passed": true,
+      "actual": "0.3"
+    },
+    {
+      "name": "Easy release support_threshold_angle",
+      "passed": true,
+      "actual": "45"
+    },
+    {
+      "name": "PLA material filament_vendor",
+      "passed": true,
+      "actual": [
+        "Snapmaker"
+      ]
+    },
+    {
+      "name": "PLA material activate_chamber_temp_control",
+      "passed": true,
+      "actual": [
+        "0"
+      ]
+    },
+    {
+      "name": "PLA material filament_diameter",
+      "passed": true,
+      "actual": [
+        "1.75"
+      ]
+    },
+    {
+      "name": "PLA material fan_min_speed",
+      "passed": true,
+      "actual": [
+        "100"
+      ]
+    },
+    {
+      "name": "PLA material fan_max_speed",
+      "passed": true,
+      "actual": [
+        "100"
+      ]
+    },
+    {
+      "name": "PLA material close_fan_the_first_x_layers",
+      "passed": true,
+      "actual": [
+        "1"
+      ]
+    },
+    {
+      "name": "Manual mode; no auto support blocks",
+      "passed": true
+    },
+    {
+      "name": "Automatic supports and shared brims disabled",
+      "passed": true
+    },
+    {
+      "name": "Single-bead sheet specification",
+      "passed": true
+    },
+    {
+      "name": "0.4 mm U1 nozzles",
+      "passed": true
+    },
+    {
+      "name": "two plates",
+      "passed": true
+    },
+    {
+      "name": "No locking key in current project",
+      "passed": true
+    },
+    {
+      "name": "Correct number of independently printable objects",
+      "passed": true
+    },
+    {
+      "name": "Correct object count on plate 1",
+      "passed": true
+    },
+    {
+      "name": "1/hook_fit_coupon: separate disposable sheets",
+      "passed": true,
+      "count": 8
+    },
+    {
+      "name": "1/hook_fit_coupon: sheet geometry preserved",
+      "passed": true
+    },
+    {
+      "name": "1/hook_fit_coupon: sheets do not fuse into accessory",
+      "passed": true
+    },
+    {
+      "name": "1/hook_fit_coupon: unchanged accessory surface in saved project",
+      "passed": true
+    },
+    {
+      "name": "1/hook_fit_coupon geometry and bed placement",
+      "passed": true,
+      "bounds_mm": [
+        [
+          45.0,
+          100.0000004,
+          0.0
+        ],
+        [
+          67.6464118,
+          133.4215016,
+          14.77998352
+        ]
+      ]
+    },
+    {
+      "name": "hook_fit_coupon broad end faces bed",
+      "passed": true
+    },
+    {
+      "name": "1/universal_receiver: separate disposable sheets",
+      "passed": true,
+      "count": 0
+    },
+    {
+      "name": "1/universal_receiver: unchanged accessory surface in saved project",
+      "passed": true
+    },
+    {
+      "name": "1/universal_receiver geometry and bed placement",
+      "passed": true,
+      "bounds_mm": [
+        [
+          95.0,
+          100.0000004,
+          0.0
+        ],
+        [
+          115.5,
+          125.7999996,
+          4.8499999
+        ]
+      ]
+    },
+    {
+      "name": "1/male_fit_coupon: separate disposable sheets",
+      "passed": true,
+      "count": 5
+    },
+    {
+      "name": "1/male_fit_coupon: sheet geometry preserved",
+      "passed": true
+    },
+    {
+      "name": "1/male_fit_coupon: sheets do not fuse into accessory",
+      "passed": true
+    },
+    {
+      "name": "1/male_fit_coupon: unchanged accessory surface in saved project",
+      "passed": true
+    },
+    {
+      "name": "1/male_fit_coupon geometry and bed placement",
+      "passed": true,
+      "bounds_mm": [
+        [
+          145.0,
+          99.99999998,
+          0.0
+        ],
+        [
+          165.0,
+          103.45000001999999,
+          26.0
+        ]
+      ]
+    },
+    {
+      "name": "male_fit_coupon broad end faces bed",
+      "passed": true
+    },
+    {
+      "name": "plate 1 objects 0/1 have support/brim space",
+      "passed": true
+    },
+    {
+      "name": "plate 1 objects 0/2 have support/brim space",
+      "passed": true
+    },
+    {
+      "name": "plate 1 objects 1/2 have support/brim space",
+      "passed": true
+    },
+    {
+      "name": "Correct object count on plate 2",
+      "passed": true
+    },
+    {
+      "name": "2/g7_mount: separate disposable sheets",
+      "passed": true,
+      "count": 26
+    },
+    {
+      "name": "2/g7_mount: sheet geometry preserved",
+      "passed": true
+    },
+    {
+      "name": "2/g7_mount: sheets do not fuse into accessory",
+      "passed": true
+    },
+    {
+      "name": "2/g7_mount: unchanged accessory surface in saved project",
+      "passed": true
+    },
+    {
+      "name": "2/g7_mount geometry and bed placement",
+      "passed": true,
+      "bounds_mm": [
+        [
+          45.0,
+          100.0000004,
+          0.0
+        ],
+        [
+          67.64641180000001,
+          133.4215016,
+          50.2908592
+        ]
+      ]
+    },
+    {
+      "name": "g7_mount broad end faces bed",
+      "passed": true
+    },
+    {
+      "name": "2/box: separate disposable sheets",
+      "passed": true,
+      "count": 14
+    },
+    {
+      "name": "2/box: sheet geometry preserved",
+      "passed": true
+    },
+    {
+      "name": "2/box: sheets do not fuse into accessory",
+      "passed": true
+    },
+    {
+      "name": "2/box: unchanged accessory surface in saved project",
+      "passed": true
+    },
+    {
+      "name": "2/box geometry and bed placement",
+      "passed": true,
+      "bounds_mm": [
+        [
+          94.99999960000002,
+          99.9999996,
+          0.0
+        ],
+        [
+          122.70000040000002,
+          126.9500004,
+          29.5
+        ]
+      ]
+    },
+    {
+      "name": "box broad end faces bed",
+      "passed": true
+    },
+    {
+      "name": "2/lid: separate disposable sheets",
+      "passed": true,
+      "count": 0
+    },
+    {
+      "name": "2/lid: unchanged accessory surface in saved project",
+      "passed": true
+    },
+    {
+      "name": "2/lid geometry and bed placement",
+      "passed": true,
+      "bounds_mm": [
+        [
+          144.9999998,
+          100.0000004,
+          0.0
+        ],
+        [
+          174.09999820000002,
+          131.7999996,
+          4.45000076
+        ]
+      ]
+    },
+    {
+      "name": "lid broad face on bed",
+      "passed": true
+    },
+    {
+      "name": "plate 2 objects 0/1 have support/brim space",
+      "passed": true
+    },
+    {
+      "name": "plate 2 objects 0/2 have support/brim space",
+      "passed": true
+    },
+    {
+      "name": "plate 2 objects 1/2 have support/brim space",
+      "passed": true
+    },
+    {
+      "name": "Native Orca reload and slice",
+      "passed": true,
+      "result": {
+        "error_string": "Success.",
+        "export_time": 0,
+        "plate_index": 0,
+        "prepare_time": 0,
+        "return_code": 0,
+        "sliced_plates": [
+          {
+            "id": 1,
+            "sliced_time": 2,
+            "sliced_time_with_cache": 2,
+            "triangle_count": 3870,
+            "warning_message": ""
+          },
+          {
+            "id": 2,
+            "sliced_time": 6,
+            "sliced_time_with_cache": 6,
+            "triangle_count": 8502,
+            "warning_message": ""
+          }
+        ]
+      }
+    },
+    {
+      "name": "No plate slicing warnings",
+      "passed": true
+    },
+    {
+      "name": "Reopened printer_model",
+      "passed": true,
+      "actual": "Snapmaker U1"
+    },
+    {
+      "name": "Reopened printer_settings_id",
+      "passed": true,
+      "actual": "Snapmaker U1 (0.4 nozzle)"
+    },
+    {
+      "name": "Reopened curr_bed_type",
+      "passed": true,
+      "actual": "Textured PEI Plate"
+    },
+    {
+      "name": "Reopened filament_colour",
+      "passed": true,
+      "actual": [
+        "#000000"
+      ]
+    },
+    {
+      "name": "Reopened nozzle_temperature",
+      "passed": true,
+      "actual": [
+        "220"
+      ]
+    },
+    {
+      "name": "Reopened textured_plate_temp",
+      "passed": true,
+      "actual": [
+        "65"
+      ]
+    },
+    {
+      "name": "Reopened layer_height",
+      "passed": true,
+      "actual": "0.16"
+    },
+    {
+      "name": "Reopened wall_loops",
+      "passed": true,
+      "actual": "4"
+    },
+    {
+      "name": "Reopened sparse_infill_density",
+      "passed": true,
+      "actual": "25%"
+    },
+    {
+      "name": "Reopened enable_support",
+      "passed": true,
+      "actual": "1"
+    },
+    {
+      "name": "Reopened support_style",
+      "passed": true,
+      "actual": "snug"
+    },
+    {
+      "name": "plate 1: actual single-bead peel-sheet toolpaths",
+      "passed": true,
+      "sheet_count": 13,
+      "missing": []
+    },
+    {
+      "name": "plate 1 PLA heating commands",
+      "passed": true
+    },
+    {
+      "name": "plate 1 G-code generated",
+      "passed": true
+    },
+    {
+      "name": "plate 2: actual single-bead peel-sheet toolpaths",
+      "passed": true,
+      "sheet_count": 40,
+      "missing": []
+    },
+    {
+      "name": "plate 2 PLA heating commands",
+      "passed": true
+    },
+    {
+      "name": "plate 2 G-code generated",
+      "passed": true
+    },
+    {
+      "name": "Supported project ZIP integrity",
+      "passed": true
+    },
+    {
+      "name": "Supported project printer_model",
+      "passed": true
+    },
+    {
+      "name": "Supported project filament_colour",
+      "passed": true
+    },
+    {
+      "name": "Supported project curr_bed_type",
+      "passed": true
+    },
+    {
+      "name": "Supported project enable_support",
+      "passed": true
+    },
+    {
+      "name": "Supported project support_type",
+      "passed": true
+    },
+    {
+      "name": "Supported project support_style",
+      "passed": true
+    },
+    {
+      "name": "Supported project support_on_build_plate_only",
+      "passed": true
+    },
+    {
+      "name": "plate 1 exact toolpaths embedded",
+      "passed": true
+    },
+    {
+      "name": "plate 2 exact toolpaths embedded",
+      "passed": true
+    }
+  ],
+  "check_count": 110,
+  "plate_estimates": [
+    {
+      "plate": 1,
+      "filament_g": "6.59",
+      "time": "37m 28s"
+    },
+    {
+      "plate": 2,
+      "filament_g": "19.12",
+      "time": "2h 6m 8s"
+    }
+  ],
+  "physical_print_tested": false,
+  "notes": [
+    "Native CLI validates both saved plates with no slicing warnings.",
+    "CLI --allow-newer-file is needed because 2.4.1 compares its own exported version with a legacy Bambu version constant.",
+    "The official preset has a degenerate empty bed-exclusion polygon; the CLI logs calc_exclude_triangles but returns Success and checks toolpaths.",
+    "CLI also reports missing optional BBL baseline preset paths; full saved settings were verified after reopening. No graphical desktop inspection or physical print test was performed."
+  ]
+}

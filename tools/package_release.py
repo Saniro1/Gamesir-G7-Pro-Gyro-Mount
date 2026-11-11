@@ -4,13 +4,14 @@ import zipfile,argparse
 
 parser=argparse.ArgumentParser()
 parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31,32],default=32)
+parser.add_argument('--material',choices=['all','pla'],default='all',help='Use a separate PLA archive name; both material profiles are preserved.')
 args=parser.parse_args()
 root = Path(__file__).resolve().parents[1]
 paths = [root/'README.md', root/'.gitignore']
 for name in ('cad', 'printable', 'assemblies', 'docs', 'tools', 'originals', 'slicer'):
     paths.extend(p for p in (root/name).rglob('*') if p.is_file() and '__pycache__' not in p.parts)
 (root/'releases').mkdir(exist_ok=True)
-out = root/'releases'/f'G7_Pro_Modular_Reversible_Box2_V{args.design_version}_Complete.zip'
+out = root/'releases'/f'G7_Pro_Modular_Reversible_Box2_V{args.design_version}_Complete{"_PLA" if args.material=="pla" else ""}.zip'
 with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
     for p in sorted(paths):
         z.write(p, p.relative_to(root))
