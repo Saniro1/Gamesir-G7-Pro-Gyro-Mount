@@ -15,10 +15,10 @@ import trimesh
 from design_frames import dock_tilt,transform_points
 
 parser=argparse.ArgumentParser()
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31,32],default=32)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31,32,33],default=33)
 args=parser.parse_args()
 VERSION=args.design_version
-SHIFT=np.array([0.,-30. if VERSION>=27 else -40.,{24:8.,25:3.,26:-7.0285,27:-7.0285,28:-7.0285,29:-7.0285,30:-7.0285,31:-7.0285,32:-7.0285}[VERSION]]) if VERSION>=24 else np.zeros(3)
+SHIFT=np.array([0.,-30. if VERSION>=27 else -40.,{24:8.,25:3.,26:-7.0285,27:-7.0285,28:-7.0285,29:-7.0285,30:-7.0285,31:-7.0285,32:-7.0285,33:-7.0285}[VERSION]]) if VERSION>=24 else np.zeros(3)
 ROOT = Path(__file__).resolve().parents[1]
 REPORT=ROOT/'docs'/('validation.json' if VERSION==23 else f'validation_v{VERSION}.json')
 REPORT.unlink(missing_ok=True)
@@ -151,7 +151,7 @@ check('lid can clear box after sliding toward negative local Y',
       max_intentional_detent_overlap_mm3=max(lid_motion), samples=len(lid_motion))
 
 if VERSION>=32:
-    check('Box 2 and USB access retained', (ROOT/'printable/G7_Modular_v32_box.stl').read_bytes()==(ROOT/'printable/G7_Modular_v31_box.stl').read_bytes())
+    check('Box 2 and USB access retained', (ROOT/f'printable/G7_Modular_v{VERSION}_box.stl').read_bytes()==(ROOT/'printable/G7_Modular_v31_box.stl').read_bytes())
     check('locking key excluded from current parts', 'lock_key' not in PARTS)
     for x in [-9.,9.]:
         probe=trimesh.creation.box(extents=[.2,1.,2.18]);probe.apply_translation([x,11.9,3.18])
@@ -171,6 +171,19 @@ if VERSION>=32:
             rest=trimesh.boolean.difference([hit,trimesh.util.concatenate(allowed)],engine='manifold')
             residual.append(abs(rest.volume) if len(rest.faces) else 0.)
     check('lid preload confined to 0.03 mm friction pads and existing detents',max(residual,default=0)<1e-4,max_unexpected_overlap_mm3=max(residual,default=0),nominal_pad_preload_mm=.03)
+
+if VERSION>=33:
+    for part in PARTS:
+        if part!='lid':check(f'{part}: V32 geometry retained',(ROOT/'printable'/f'G7_Modular_v{VERSION}_{part}.stl').read_bytes()==(ROOT/'printable'/f'G7_Modular_v32_{part}.stl').read_bytes())
+    for x,expected_tip in [(-14.,-13.23),(12.,11.23)]:
+        probe=trimesh.creation.box(extents=[4,.2,.2]);probe.apply_translation([x,-3,21.35])
+        lip=common(M['lid'],probe)
+        tip=lip.bounds[1,0] if x<0 else lip.bounds[0,0]
+        check(f'extended rail-return lip at X={x}',abs(tip-expected_tip)<.001,inner_tip_x_mm=float(tip),nominal_rail_overlap_mm=1.12,previous_overlap_mm=.52,remaining_sidewall_gap_mm=.23)
+    previous=trimesh.load_mesh(ROOT/'printable/G7_Modular_v32_lid.stl')
+    before=overlap(M['box'],translated(previous,[0,0,.3]))
+    after=overlap(M['box'],translated(M['lid'],[0,0,.3]))
+    check('longer lips mechanically catch rails during outward lift',after>before+2,old_contact_mm3=before,new_contact_mm3=after,outward_lift_mm=.3)
 
 # The preserved box cavity, lid and controller contact geometry must not drift.
 if VERSION<32:

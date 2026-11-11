@@ -46,14 +46,14 @@ def air_interval(row,mid):
     return floor,float('inf'),0.
 
 
-def make_sheets(mesh):
+def make_sheets(mesh, sheet_xs=None):
     width,depth,height=mesh.extents
     xs=list(np.arange(.85,width-.5,PITCH))
     # Fine hook tongues must each have a sheet under them, not miss a coarse grid.
     if width<24:
         for x in [1.75,width-1.75]:
             xs=[a for a in xs if abs(a-x)>1.6]+[x]
-    xs=sorted(xs)
+    xs=sorted(xs if sheet_xs is None else sheet_xs)
     ys=np.arange(.25,depth-.1,CELL)
     pieces=[];records=[]
     for x in xs:
