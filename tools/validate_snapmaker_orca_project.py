@@ -6,7 +6,7 @@ from scipy.spatial import cKDTree
 import argparse
 parser=argparse.ArgumentParser(description='Verify the saved U1 project and actual Snapmaker Orca slice results.')
 parser.add_argument('--slice-results',type=Path,required=True,help='Directory containing result.json, settings.json and plate_1/2.gcode')
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31,32,33],default=33)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31,32,33,34],default=34)
 parser.add_argument('--material',choices=['auto','pla','petg'],default='auto')
 args=parser.parse_args()
 VERSION=args.design_version

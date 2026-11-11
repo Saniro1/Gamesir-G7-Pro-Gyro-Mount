@@ -15,10 +15,10 @@ import trimesh
 from design_frames import dock_tilt,transform_points
 
 parser=argparse.ArgumentParser()
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31,32,33],default=33)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31,32,33,34],default=34)
 args=parser.parse_args()
 VERSION=args.design_version
-SHIFT=np.array([0.,-30. if VERSION>=27 else -40.,{24:8.,25:3.,26:-7.0285,27:-7.0285,28:-7.0285,29:-7.0285,30:-7.0285,31:-7.0285,32:-7.0285,33:-7.0285}[VERSION]]) if VERSION>=24 else np.zeros(3)
+SHIFT=np.array([0.,-30. if VERSION>=27 else -40.,{24:8.,25:3.,26:-7.0285,27:-7.0285,28:-7.0285,29:-7.0285,30:-7.0285,31:-7.0285,32:-7.0285,33:-7.0285,34:-7.0285}[VERSION]]) if VERSION>=24 else np.zeros(3)
 ROOT = Path(__file__).resolve().parents[1]
 REPORT=ROOT/'docs'/('validation.json' if VERSION==23 else f'validation_v{VERSION}.json')
 REPORT.unlink(missing_ok=True)
@@ -174,7 +174,7 @@ if VERSION>=32:
 
 if VERSION>=33:
     for part in PARTS:
-        if part!='lid':check(f'{part}: V32 geometry retained',(ROOT/'printable'/f'G7_Modular_v{VERSION}_{part}.stl').read_bytes()==(ROOT/'printable'/f'G7_Modular_v32_{part}.stl').read_bytes())
+        if part!='lid' and not (VERSION>=34 and part=='g7_mount'):check(f'{part}: V32 geometry retained',(ROOT/'printable'/f'G7_Modular_v{VERSION}_{part}.stl').read_bytes()==(ROOT/'printable'/f'G7_Modular_v32_{part}.stl').read_bytes())
     for x,expected_tip in [(-14.,-13.23),(12.,11.23)]:
         probe=trimesh.creation.box(extents=[4,.2,.2]);probe.apply_translation([x,-3,21.35])
         lip=common(M['lid'],probe)
@@ -184,6 +184,9 @@ if VERSION>=33:
     before=overlap(M['box'],translated(previous,[0,0,.3]))
     after=overlap(M['box'],translated(M['lid'],[0,0,.3]))
     check('longer lips mechanically catch rails during outward lift',after>before+2,old_contact_mm3=before,new_contact_mm3=after,outward_lift_mm=.3)
+
+if VERSION>=34:
+    check('all five reusable parts byte-identical to V33',all((ROOT/'printable'/f'G7_Modular_v{VERSION}_{p}.stl').read_bytes()==(ROOT/'printable'/f'G7_Modular_v33_{p}.stl').read_bytes() for p in PARTS if p!='g7_mount'))
 
 # The preserved box cavity, lid and controller contact geometry must not drift.
 if VERSION<32:
@@ -239,7 +242,11 @@ else:
         actual=np.array([M['g7_mount'].vertices[np.linalg.norm(M['g7_mount'].vertices-p,axis=1).argmin()] for p in expected])
         check('tilt endpoints present in exported mount',np.max(np.linalg.norm(actual-expected,axis=1))<.001,actual_mm=actual.tolist())
         check('slider upper edge stays fixed',np.linalg.norm(actual[0]-targets[0])<.001,change_mm=float(np.linalg.norm(actual[0]-targets[0])))
-        check('slider lower edge 5 mm inward',abs(targets[1,2]-actual[1,2]-5)<.001,inward_mm=float(targets[1,2]-actual[1,2]),angle_degrees=float(np.degrees(np.arcsin(5/25.8))))
+        inward=10. if VERSION>=34 else 5.
+        check('slider lower edge cumulative inward displacement',abs(targets[1,2]-actual[1,2]-inward)<.001,inward_mm=float(targets[1,2]-actual[1,2]),angle_degrees=float(np.degrees(np.arcsin(inward/25.8))))
+        if VERSION>=34:
+            previous=transform_points(targets,dock_tilt(33))
+            check('slider lower edge another 5 mm inward from V33',abs(previous[1,2]-actual[1,2]-5)<.001,additional_inward_mm=float(previous[1,2]-actual[1,2]))
     if VERSION>=30:
         previous=trimesh.load_mesh(ROOT/'printable/G7_Modular_v29_g7_mount.stl')
         keep=trimesh.creation.box(extents=[40,100,50]);keep.apply_translation([11.5,-52,5]) # Y <= -2

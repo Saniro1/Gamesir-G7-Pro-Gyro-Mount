@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
-version="${1:-33}"
-case "$version" in 23|24|25|26|27|28|29|30|31|32|33) ;; *) exit 2 ;; esac
+version="${1:-34}"
+case "$version" in 23|24|25|26|27|28|29|30|31|32|33|34) ;; *) exit 2 ;; esac
 mkdir -p printable
 # Invalidate stale success evidence before replacing exported geometry.
 if [[ "$version" == 23 ]]; then rm -f docs/validation.json; else rm -f "docs/validation_v${version}.json"; fi
+if [[ "$version" == 34 ]]; then
+    python tools/build_v34.py
+    python tools/package_and_validate.py --design-version 34
+    exit
+fi
 if [[ "$version" == 33 ]]; then
     for part in g7_mount box universal_receiver male_fit_coupon hook_fit_coupon; do
         cp "printable/G7_Modular_v32_${part}.stl" "printable/G7_Modular_v33_${part}.stl"

@@ -3,7 +3,7 @@ from pathlib import Path
 import zipfile,argparse
 
 parser=argparse.ArgumentParser()
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31,32,33],default=33)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31,32,33,34],default=34)
 parser.add_argument('--material',choices=['all','pla'],default='all',help='Use a separate PLA archive name; both material profiles are preserved.')
 args=parser.parse_args()
 root = Path(__file__).resolve().parents[1]

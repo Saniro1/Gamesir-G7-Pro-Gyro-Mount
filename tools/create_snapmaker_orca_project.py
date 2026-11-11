@@ -12,7 +12,7 @@ parser=argparse.ArgumentParser(description='Create and optionally slice a U1 mat
 parser.add_argument('--resources',type=Path,required=True,help='Snapmaker Orca resources directory')
 parser.add_argument('--orca',required=True,help='Snapmaker Orca executable or runtime wrapper')
 parser.add_argument('--workdir',type=Path,required=True,help='Writable scratch directory for oriented meshes and logs')
-parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31,32,33],default=33)
+parser.add_argument('--design-version',type=int,choices=[23,24,25,26,27,28,29,30,31,32,33,34],default=34)
 parser.add_argument('--validate',action='store_true',help='Reopen and slice both plates, retaining results in workdir')
 parser.add_argument('--material',choices=['auto','pla','petg'],default='auto')
 args=parser.parse_args()
